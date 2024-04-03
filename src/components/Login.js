@@ -1,27 +1,107 @@
-import React from 'react';
+import React from "react";
+import divbg from "./assets/bg2.jpg";
+import background from "./assets/bg1.jpg";
+import circle from "./assets/circle.png";
 
 const Login = () => {
-
   return (
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-gradient-to-r from-violet-400 to-purple-500 p-8 rounded-lg shadow-md w-96">
-        <h2 className="flex flex-col items-center justify-center text-5xl font-semibold mb-4">Login</h2>
-        <form className="space-y-4">
-          <div>
-            <label htmlFor="domainId" className="block mb-1 font-semibold">Domain ID:</label>
-            <input type="text" id="domainId" name="domainId" className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500" placeholder='Enter Domain ID' required/>
+    <div
+      className="flex justify-center items-center h-screen relative"
+      style={{
+        backgroundImage: `url(${background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="bg-white rounded-lg shadow-lg flex h-auto md:h-96 w-full md:w-4/5 lg:w-3/4 xl:w-2/3 relative">
+        <div className="w-full md:w-1/2 bg-white rounded-l-lg relative">
+          <h1 className="text-center font-semibold text-4xl mb-6 text-black absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            Welcome to <span className="font-bold italic">iTicket</span>!
+          </h1>
+          <p className="text-center text-gray-600 font-bold mb-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            We are a community, together helping thousands of people.
+          </p>
+          <img
+            src={divbg}
+            alt="Login Image"
+            className="absolute h-full w-full object-cover rounded-l-lg"
+          />
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-8">
+            <div className="flex justify-center">
+              <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img
+                  src={circle}
+                  alt="Circle 1"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+                <img
+                  src={circle}
+                  alt="Circle 2"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="w-16 h-16 rounded-full overflow-hidden">
+                <img
+                  src={circle}
+                  alt="Circle 3"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label htmlFor="password" className="block mb-1 font-semibold">Password:</label>
-            <input type="password" id="password" name="password" className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500" placeholder='Enter Password' required/>
-          </div>
-          <div>
-            <button type="submit" className="w-full bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition duration-300 font-semibold text-1xl">Login</button>
-          </div>
-        </form>
+        </div>
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center items-center">
+          <h2 className="text-center font-semibold text-4xl mb-6 text-black italic">
+            Get Started
+          </h2>
+          <form className="w-full max-w-sm">
+            <div className="mb-4">
+              <label
+                htmlFor="username"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Username:
+              </label>
+              <input
+                type="text"
+                id="domain_id"
+                name="domain_id"
+                className="appearance-none bg-transparent border-b-2 border-green-500 w-full text-gray-700 py-2 px-3 leading-tight focus:outline-none focus:border-emerald-500"
+                placeholder="Enter Domain ID"
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Password:
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="appearance-none bg-transparent border-b-2 border-green-500 w-full text-gray-700 py-2 px-3 leading-tight focus:outline-none focus:border-emerald-500"
+                placeholder="Enter Password"
+                required
+              />
+            </div>
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default Login;
