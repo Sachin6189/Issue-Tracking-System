@@ -1,19 +1,55 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { isLength } from "validator";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("/api/login", { username, password });
-      // Handle successful login
-    } catch (error) {
-      // Handle error
+
+    const isValid = validateInput();
+
+    if (isValid) {
+      try {
+        const response = await axios.post("/api/login", { username, password });
+        // Handle successful login
+      } catch (error) {
+        // Handle error
+      }
     }
+  };
+
+  const validateInput = () => {
+    const usernameValue = username.trim();
+    const passwordValue = password.trim();
+
+    let isValid = true;
+
+    if (usernameValue === "") {
+      setUsernameError("Username is required");
+      isValid = false;
+    } else if (!isLength(usernameValue, { min: 3, max: 20 })) {
+      setUsernameError("Username must be between 3 and 20 characters");
+      isValid = false;
+    } else {
+      setUsernameError("");
+    }
+
+    if (passwordValue === "") {
+      setPasswordError("Password is required");
+      isValid = false;
+    } else if (!isLength(passwordValue, { min: 8 })) {
+      setPasswordError("Password must be at least 8 characters");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    return isValid;
   };
 
   return (
@@ -39,6 +75,7 @@ const LoginForm = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          {usernameError && <p className="text-red-500">{usernameError}</p>}
         </div>
         <div className="mb-6">
           <label
@@ -57,6 +94,7 @@ const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {passwordError && <p className="text-red-500">{passwordError}</p>}
         </div>
         <div className="flex justify-center">
           <button
