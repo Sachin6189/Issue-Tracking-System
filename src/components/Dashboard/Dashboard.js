@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Navbar from './Navbar/Navbar';
-import Sidebar from './Navbar/Sidebar';
+import React, { useState } from "react";
+import Navbar from "./Navbar/Navbar";
+import Sidebar from "./Navbar/Sidebar";
 
 const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(false);
