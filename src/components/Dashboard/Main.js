@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
+import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import Tickets from "../../components/assets/tickets.gif";
 import TicketOpen from "../../components/assets/open_tickets.gif";
@@ -12,12 +13,18 @@ const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
+  const navigate = useNavigate();
+
   const handleChangeStart = (date) => {
     setStartDate(date);
   };
 
   const handleChangeEnd = (date) => {
     setEndDate(date);
+  };
+
+  const raiseTicket = () => {
+    navigate('/raiseTicket');
   };
 
   const NoOfTicketsRaised = 0;
@@ -30,7 +37,10 @@ const Main = () => {
     <div>
       {/*Button and Calendar */}
       <div className="flex justify-between items-center mt-5 pl-2">
-        <button className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded">
+        <button
+          onClick={raiseTicket}
+          className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
+        >
           Raise New Ticket
         </button>
         <div className="flex font-[fangsong] pr-3">
@@ -55,7 +65,7 @@ const Main = () => {
 
       {/*Boxes design*/}
       <div className="flex pt-5">
-        <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-red-400 rounded-lg font-semibold text-red-400 font-[fangsong] border-gr"> 
+        <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-red-400 rounded-lg font-semibold text-red-400 font-[fangsong] border-gr">
           <div className="w-1/4">
             <img src={Tickets} />
           </div>
