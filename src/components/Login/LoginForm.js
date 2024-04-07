@@ -53,11 +53,11 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
+    <div className="w-full md:w-1/2 p-8 flex flex-col justify-center items-center">
       <h2 className="text-center font-semibold text-4xl mb-6 text-black italic">
         Get Started
       </h2>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm">
+      <form className="w-full max-w-sm" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
             htmlFor="username"
@@ -69,11 +69,13 @@ const LoginForm = () => {
             type="text"
             id="username"
             name="username"
+            value={username}
             className="appearance-none bg-transparent border-b-2 border-blue-400 w-full text-gray-700 py-2 px-3 leading-tight focus:outline-none focus:border-blue-400"
             placeholder="Enter Username"
             required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
           />
           {usernameError && <p className="text-red-500">{usernameError}</p>}
         </div>
@@ -88,11 +90,13 @@ const LoginForm = () => {
             type="password"
             id="password"
             name="password"
+            value={password}
             className="appearance-none bg-transparent border-b-2 border-blue-400 w-full text-gray-700 py-2 px-3 leading-tight focus:outline-none focus:border-blue-400"
             placeholder="Enter Password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
           />
           {passwordError && <p className="text-red-500">{passwordError}</p>}
         </div>
