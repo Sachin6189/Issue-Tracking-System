@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { isLength } from "validator";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,13 +18,31 @@ const LoginForm = () => {
 
     if (isValid) {
       try {
-        const response = await axios.post("/api/login", { username, password });
-        // Handle successful login
+        if (username === "sachin" && password === "sachin") {
+          navigate("/dashboard");
+        } else {
+          setPasswordError("Invalid Credentials");
+        }
       } catch (error) {
-        // Handle error
+        alert(error);
       }
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const isValid = validateInput();
+
+  //   if (isValid) {
+  //     try {
+  //       const response = await axios.post("/api/login", { username, password });
+  //       // Handle successful login
+  //     } catch (error) {
+  //       // Handle error
+  //     }
+  //   }
+  // };
 
   const validateInput = () => {
     const usernameValue = username.trim();
@@ -41,9 +62,6 @@ const LoginForm = () => {
 
     if (passwordValue === "") {
       setPasswordError("Password is required");
-      isValid = false;
-    } else if (!isLength(passwordValue, { min: 8 })) {
-      setPasswordError("Password must be at least 8 characters");
       isValid = false;
     } else {
       setPasswordError("");
