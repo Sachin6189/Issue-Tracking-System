@@ -9,7 +9,7 @@ const Sidebar=()=> {
       <ul>
         <li className="p-4 hover:bg-gray-700 cursor-pointer text-[#47c8c3] font-[fangsong]">
           <FiHome className="inline mr-2" />
-          <a href="#">Dashboard</a>
+          <a href="/dashboard">Dashboard</a>
         </li>
         <hr />
         <li
