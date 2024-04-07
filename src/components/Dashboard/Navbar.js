@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import userLogo from "../../assets/profile.png";
-import Sidebar from "../../assets/sidebar.png";
-import Logo from "../../assets/logo.png";
+import userLogo from  '../assets/user.png';
+import Sidebar from "../assets/sidebar.png";
+import Logo from "../assets/logo.png";
 
 const Navbar = ({ toggleSidebar }) => {
   const [showSignout, setShowSignout] = useState(false);
@@ -14,7 +14,7 @@ const Navbar = ({ toggleSidebar }) => {
 
   return (
     <div>
-      <nav className="bg-gray-800 p-1 flex justify-between items-center sticky pr-4">
+      <nav className="bg-gray-800 p-1 flex justify-between items-center sticky z-10 pr-4">
         <div className="flex items-center gap-4 ">
           <img src={Logo} alt="Logo" className="h-10 rounded-xl ml-2 " />
         </div>
