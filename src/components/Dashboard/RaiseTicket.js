@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -6,27 +6,6 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-// const employees = [
-//   { value: "chocolate", label: "Chocolate" },
-//   { value: "strawberry", label: "Strawberry" },
-//   { value: "vanilla", label: "Vanilla" },
-// ];
-// const projects = [
-//   { value: "chocolate", label: "Chocolate" },
-//   { value: "strawberry", label: "Strawberry" },
-//   { value: "vanilla", label: "Vanilla" },
-// ];
-// const modules = [
-//   { value: "chocolate", label: "Chocolate" },
-//   { value: "strawberry", label: "Strawberry" },
-//   { value: "vanilla", label: "Vanilla" },
-// ];
-// const categories = [
-//   { value: "chocolate", label: "Chocolate" },
-//   { value: "strawberry", label: "Strawberry" },
-//   { value: "vanilla", label: "Vanilla" },
-// ];
 
 const RaiseTicket = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -36,34 +15,35 @@ const RaiseTicket = () => {
   const [contact, setContact] = useState("");
   const [issueTitle, setIssueTitle] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
+  const [employees, setEmployees] = useState([]);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
 
-  const handleSubmit = async () => {
-    try {
-      const formData = new FormData();
-      // formData.append('file', uploadedFile);
-      formData.append("selectedEmployee", selectedEmployee);
-      formData.append("selectedProject", selectedProject);
-      formData.append("selectedModule", selectedModule);
-      formData.append("selectedCategory", selectedCategory);
-      formData.append("contact", contact);
-      formData.append("issueTitle", issueTitle);
-      // formData.append('description', description);
+  // const handleSubmit = async () => {
+  //   try {
+  //     const formData = new FormData();
+  //     // formData.append('file', uploadedFile);
+  //     formData.append("selectedEmployee", selectedEmployee);
+  //     formData.append("selectedProject", selectedProject);
+  //     formData.append("selectedModule", selectedModule);
+  //     formData.append("selectedCategory", selectedCategory);
+  //     formData.append("contact", contact);
+  //     formData.append("issueTitle", issueTitle);
+  //     // formData.append('description', description);
 
-      await axios.post("/send-email", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      alert("Email sent successfully!");
-    } catch (error) {
-      console.error("Error sending email:", error);
-      alert("Error sending email. Please try again later.");
-    }
-  };
+  //     await axios.post("/send-email", formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     alert("Email sent successfully!");
+  //   } catch (error) {
+  //     console.error("Error sending email:", error);
+  //     alert("Error sending email. Please try again later.");
+  //   }
+  // };
 
   const customStyles = {
     control: (provided) => ({
@@ -77,6 +57,21 @@ const RaiseTicket = () => {
   const handleCancel = () => {
     navigate("/dashboard");
   };
+
+  // const fetchEmployees = async () => {
+  //   const response = await fetch("/employee.json");
+  //   const data = await response.json();
+  //   setEmployees(data.employeeDetails);
+  // };
+
+  const fetchEmployees = async () => {
+    const response = await axios.get("/Data/employee.json");
+    setEmployees(response.data.employeeDetails);
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen font-[fangsong]">
@@ -97,7 +92,10 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedEmployee}
                   onChange={setSelectedEmployee}
-                  // options={employees}
+                  options={employees.map((employee) => ({
+                    // value: employee.empID,
+                    label: employee.empID,
+                  }))}
                   placeholder="--Select an employee--"
                   styles={customStyles}
                 />
@@ -199,7 +197,7 @@ const RaiseTicket = () => {
               <div className="flex justify-center mt-1">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-semibold px-6 py-2 mr-4 rounded"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   Submit
                 </button>

@@ -1,0 +1,24 @@
+{
+    "module": [
+        {
+            "moduleID": 1,
+            "moduleName": "Module A"
+        },
+        {
+            "moduleID": 2,
+            "moduleName": "Module B"
+        },
+        {
+            "moduleID": 3,
+            "moduleName": "Module C"
+        },
+        {
+            "moduleID": 4,
+            "moduleName": "Module D"
+        },
+        {
+            "moduleID": 5,
+            "moduleName": "Module E"
+        }
+    ]
+}
