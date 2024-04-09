@@ -24,7 +24,7 @@ const Main = () => {
   };
 
   const raiseTicket = () => {
-    navigate('/raiseTicket');
+    navigate('/dashboard/raiseTicket');
   };
 
   const NoOfTicketsRaised = 0;
@@ -41,7 +41,7 @@ const Main = () => {
           onClick={raiseTicket}
           className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
         >
-          Raise New Ticket
+         Raise New Ticket
         </button>
         <div className="flex font-[fangsong] pr-3">
           <div className="mr-3 ">

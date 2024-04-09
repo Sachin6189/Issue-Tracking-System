@@ -1,6 +1,42 @@
 import React from 'react';
 
 const DashboardTable = () => {
+
+  const dummyData = [
+    {
+      ticketNo: 'T001',
+      project: 'Project A',
+      module: 'Module 1',
+      category: 'Category A',
+      issueTitle: 'Issue 1',
+      status: 'Open',
+      raiser: 'John Doe',
+      location: 'Location A',
+      contactNo: '1234567890',
+      supportPersons: 'Support Person 1',
+      elapsedTime: '2 hours',
+      raisedTime: '2024-04-09 10:00',
+      solutionTime: '2024-04-09 12:00',
+      consumeTime: '120',
+    },
+    {
+      ticketNo: 'T002',
+      project: 'Project B',
+      module: 'Module 2',
+      category: 'Category B',
+      issueTitle: 'Issue 2',
+      status: 'Closed',
+      raiser: 'Jane Doe',
+      location: 'Location B',
+      contactNo: '0987654321',
+      supportPersons: 'Support Person 2',
+      elapsedTime: '1 day',
+      raisedTime: '2024-04-08 09:00',
+      solutionTime: '2024-04-09 09:00',
+      consumeTime: '1440',
+    },
+   
+  ];
   return (
     <div>
       <div className="flex justify-end pr-3 pt-4">
@@ -33,7 +69,25 @@ const DashboardTable = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Populate table rows here "Table data will come dynamically" */}
+            {dummyData.map((data, index) => (
+              <tr key={index}>
+                <td className="px-4 py-2 border border-gray-300">{data.ticketNo}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.project}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.module}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.category}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.issueTitle}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.status}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.raiser}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.location}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.contactNo}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.supportPersons}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.elapsedTime}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.raisedTime}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.solutionTime}</td>
+                <td className="px-4 py-2 border border-gray-300">{data.consumeTime}</td>
+                <td className="px-4 py-2 border border-gray-300">Action Button</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

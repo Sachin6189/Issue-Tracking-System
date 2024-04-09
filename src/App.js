@@ -10,9 +10,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/raiseTicket" element={<RaiseTicket />} />
+        <Route path="/dashboard/raiseTicket" element={<RaiseTicket />} />
       </Routes>
     </Router>
+    // <RaiseTicket/>
   );
 }
 
