@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "projectName": "Project1",
+      "modules": ["Module1", "Module2", "Module3"]
+    },
+    {
+      "projectName": "Project2",
+      "modules": ["Module4", "Module5", "Module6"]
+    },
+    {
+      "projectName": "Project3",
+      "modules": ["Module7", "Module8", "Module9"]
+    }
+  ]
+}
