@@ -16,6 +16,8 @@ const RaiseTicket = () => {
   const [issueTitle, setIssueTitle] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
   const [employees, setEmployees] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [filteredModules, setFilteredModules] = useState([]);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -73,6 +75,35 @@ const RaiseTicket = () => {
     fetchEmployees();
   }, []);
 
+  // useEffect(() => {
+  //   fetch("./projects.json")
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data.projects);
+  //       setProjects(data.projects);
+  //     });
+  // }, []);
+
+  const fetchProjects = async () => {
+    const response = await axios.get("/Data/projects.json");
+    setProjects(response.data.projects);
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    if (selectedProject) {
+      const filtered = projects.find(
+        (projects) => projects.projectName === selectedProject.label
+      );
+      setFilteredModules(filtered.modules);
+    } else {
+      setFilteredModules([]);
+    }
+  }, [selectedProject]);
+
   return (
     <div className="flex flex-col min-h-screen font-[fangsong]">
       <Navbar toggleSidebar={toggleSidebar} />
@@ -93,7 +124,7 @@ const RaiseTicket = () => {
                   value={selectedEmployee}
                   onChange={setSelectedEmployee}
                   options={employees.map((employee) => ({
-                    // value: employee.empID,
+                    value: employee.empID,
                     label: employee.empID,
                   }))}
                   placeholder="--Select an employee--"
@@ -107,7 +138,10 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedProject}
                   onChange={setSelectedProject}
-                  // options={projects}
+                  options={projects.map((projects) => ({
+                    value: projects.projectName,
+                    label: projects.projectName,
+                  }))}
                   placeholder="--Select a project--"
                   styles={customStyles}
                 />
@@ -119,7 +153,10 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedModule}
                   onChange={setSelectedModule}
-                  // options={modules}
+                  options={filteredModules.map((modules) => ({
+                    value: modules,
+                    label: modules,
+                  }))}
                   placeholder="--Select a module--"
                   styles={customStyles}
                 />
