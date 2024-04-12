@@ -18,34 +18,28 @@ const RaiseTicket = () => {
   const [employees, setEmployees] = useState([]);
   const [projects, setProjects] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const formData = new FormData();
-  //     // formData.append('file', uploadedFile);
-  //     formData.append("selectedEmployee", selectedEmployee);
-  //     formData.append("selectedProject", selectedProject);
-  //     formData.append("selectedModule", selectedModule);
-  //     formData.append("selectedCategory", selectedCategory);
-  //     formData.append("contact", contact);
-  //     formData.append("issueTitle", issueTitle);
-  //     // formData.append('description', description);
-
-  //     await axios.post("/send-email", formData, {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     });
-  //     alert("Email sent successfully!");
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //     alert("Error sending email. Please try again later.");
-  //   }
-  // };
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/submit", {
+        selectedEmployee,
+        selectedProject,
+        selectedModule,
+        selectedCategory,
+        contact,
+        issueTitle,
+      });
+      alert("Data sent successfully!");
+    } catch (error) {
+      console.error("Error sending data:", error);
+      alert("Error sending data. Please try again later.");
+    }
+  };
 
   const customStyles = {
     control: (provided) => ({
@@ -60,12 +54,6 @@ const RaiseTicket = () => {
     navigate("/dashboard");
   };
 
-  // const fetchEmployees = async () => {
-  //   const response = await fetch("/employee.json");
-  //   const data = await response.json();
-  //   setEmployees(data.employeeDetails);
-  // };
-
   const fetchEmployees = async () => {
     const response = await axios.get("/Data/employee.json");
     setEmployees(response.data.employeeDetails);
@@ -74,15 +62,6 @@ const RaiseTicket = () => {
   useEffect(() => {
     fetchEmployees();
   }, []);
-
-  // useEffect(() => {
-  //   fetch("./projects.json")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data.projects);
-  //       setProjects(data.projects);
-  //     });
-  // }, []);
 
   const fetchProjects = async () => {
     const response = await axios.get("/Data/projects.json");
@@ -103,6 +82,17 @@ const RaiseTicket = () => {
       setFilteredModules([]);
     }
   }, [selectedProject]);
+
+  useEffect(() => {
+    if (selectedModule) {
+      const filtered = filteredModules.find(
+        (modules) => modules.moduleName === selectedModule.label
+      );
+      setFilteredCategories(filtered.categories);
+    } else {
+      setFilteredCategories([]);
+    }
+  }, [selectedModule]);
 
   return (
     <div className="flex flex-col min-h-screen font-[fangsong]">
@@ -154,8 +144,8 @@ const RaiseTicket = () => {
                   value={selectedModule}
                   onChange={setSelectedModule}
                   options={filteredModules.map((modules) => ({
-                    value: modules,
-                    label: modules,
+                    value: modules.moduleName,
+                    label: modules.moduleName,
                   }))}
                   placeholder="--Select a module--"
                   styles={customStyles}
@@ -168,7 +158,10 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedCategory}
                   onChange={setSelectedCategory}
-                  // options={categories}
+                  options={filteredCategories.map((categories) => ({
+                    value: categories,
+                    label: categories,
+                  }))}
                   placeholder="--Select a category--"
                   styles={customStyles}
                 />
@@ -205,7 +198,7 @@ const RaiseTicket = () => {
                 </label>
                 <CKEditor
                   editor={ClassicEditor}
-                  data="<p>Enter text here...</p>"
+                  data=""
                   onReady={(editor) => {
                     console.log("Editor is ready to use!", editor);
                   }}
@@ -234,7 +227,7 @@ const RaiseTicket = () => {
               <div className="flex justify-center mt-1">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-semibold px-6 py-2 mr-4 rounded"
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   Submit
                 </button>

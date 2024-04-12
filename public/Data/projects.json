@@ -2,15 +2,85 @@
   "projects": [
     {
       "projectName": "Project1",
-      "modules": ["Module1", "Module2", "Module3"]
+
+      "modules": [
+        {
+          "moduleName": "Module1",
+          "categories": ["Web dev", "Database", "Cloud"]
+        },
+        {
+          "moduleName": "Module2",
+          "categories": ["Testing", "Security", "User Interface (UI)"]
+        },
+        {
+          "moduleName": "Module3",
+          "categories": ["Analytics", "Integration", "Error Handling"]
+        }
+      ]
     },
     {
       "projectName": "Project2",
-      "modules": ["Module4", "Module5", "Module6"]
+      "modules": [
+        {
+          "moduleName": "Module4",
+          "categories": [
+            "Performance Optimization",
+            "Documentation",
+            "Deployment"
+          ]
+        },
+        {
+          "moduleName": "Module5",
+          "categories": ["Accessibility", "Localization", "Authentication"]
+        }
+      ]
     },
     {
       "projectName": "Project3",
-      "modules": ["Module7", "Module8", "Module9"]
+      "modules": [
+        {
+          "moduleName": "Module6",
+          "categories": [
+            "Version Control",
+            "Continuous Integration",
+            "Code Review"
+          ]
+        },
+        {
+          "moduleName": "Module7",
+          "categories": ["Data Structures", "Algorithms", "Machine Learning"]
+        }
+      ]
+    },
+    {
+      "projectName": "Project4",
+      "modules": [
+        {
+          "moduleName": "Module8",
+          "categories": ["Networking", "Security", "Cybersecurity"]
+        },
+        {
+          "moduleName": "Module9",
+          "categories": [
+            "Artificial Intelligence",
+            "Natural Language Processing",
+            "Computer Vision"
+          ]
+        }
+      ]
+    },
+    {
+      "projectName": "Project5",
+      "modules": [
+        {
+          "moduleName": "Module10",
+          "categories": ["Frontend", "Backend", "Full Stack"]
+        },
+        {
+          "moduleName": "Module11",
+          "categories": ["UI/UX Design", "Responsive Design", "User Testing"]
+        }
+      ]
     }
   ]
 }
