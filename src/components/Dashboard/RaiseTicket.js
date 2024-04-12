@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import _ from "lodash";
 
 const RaiseTicket = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -93,6 +94,11 @@ const RaiseTicket = () => {
       setFilteredCategories([]);
     }
   }, [selectedModule]);
+
+  const debouncedOnChange = _.debounce((event, editor) => {
+    const data = editor.getData();
+    console.log({ event, editor, data });
+  }, 500);
 
   return (
     <div className="flex flex-col min-h-screen font-[fangsong]">
@@ -202,16 +208,7 @@ const RaiseTicket = () => {
                   onReady={(editor) => {
                     console.log("Editor is ready to use!", editor);
                   }}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    console.log({ event, editor, data });
-                  }}
-                  // onBlur={(event, editor) => {
-                  //   console.log("Blur.", editor);
-                  // }}
-                  // onFocus={(event, editor) => {
-                  //   console.log("Focus.", editor);
-                  // }}
+                  onChange={debouncedOnChange}
                 />
               </div>
               <div className="w-full mt-1 mb-1">
