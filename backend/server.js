@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 app.use(bodyParser.json());
@@ -9,6 +10,7 @@ app.use(cors());
 
 app.post("/submit", (req, res) => {
   const data = req.body;
+  data.id = uuidv4().substring(0, 4);
 
   if (!fs.existsSync("data.json")) {
     fs.writeFileSync("data.json", JSON.stringify([data], null, 2));
