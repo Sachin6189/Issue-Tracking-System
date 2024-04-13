@@ -2,33 +2,28 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
+const path = require("path");
+const moment = require("moment-timezone");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+const pathToDirectory = "../public/Data";
+const dataFilePath = path.join(pathToDirectory, "data.json");
+
 app.post("/submit", (req, res) => {
   const data = req.body;
-  data.id = uuidv4().substring(0, 4);
+  data.id = Math.floor(Math.random() * 9000 + 1000);
+  data.raisedTime = moment().tz("Asia/Kolkata").format();
 
-  if (!fs.existsSync("data.json")) {
-    fs.writeFileSync("data.json", JSON.stringify([data], null, 2));
+  if (!fs.existsSync(dataFilePath)) {
+    fs.writeFileSync(dataFilePath, JSON.stringify([data], null, 2));
   } else {
-    const jsonData = JSON.stringify(data, null, 2);
-    fs.readFile("data.json", "utf8", (err, fileData) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error reading file.");
-      }
-
-      const parsedFileData = JSON.parse(fileData);
-      parsedFileData.push(data);
-
-      fs.writeFileSync("data.json", JSON.stringify(parsedFileData, null, 2));
-
-      res.send("Data saved successfully.");
-    });
+    const jsonData = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+    jsonData.push(data);
+    fs.writeFileSync(dataFilePath, JSON.stringify(jsonData, null, 2));
+    res.send("Data saved successfully.");
   }
 });
 
