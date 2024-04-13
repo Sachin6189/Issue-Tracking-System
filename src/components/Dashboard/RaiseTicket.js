@@ -76,24 +76,30 @@ const RaiseTicket = () => {
   useEffect(() => {
     if (selectedProject) {
       const filtered = projects.find(
-        (projects) => projects.projectName === selectedProject.label
+        (project) => project.projectName === selectedProject.label
       );
       setFilteredModules(filtered.modules);
+      setSelectedModule(null); 
+      setSelectedCategory(null); 
     } else {
       setFilteredModules([]);
+      setSelectedModule(null); 
+      setSelectedCategory(null); 
     }
-  }, [selectedProject]);
+  }, [selectedProject, projects]);
 
   useEffect(() => {
     if (selectedModule) {
       const filtered = filteredModules.find(
-        (modules) => modules.moduleName === selectedModule.label
+        (module) => module.moduleName === selectedModule.label
       );
       setFilteredCategories(filtered.categories);
+      setSelectedCategory(null);
     } else {
       setFilteredCategories([]);
+      setSelectedCategory(null); 
     }
-  }, [selectedModule]);
+  }, [selectedModule, filteredModules]);
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
