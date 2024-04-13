@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import _ from "lodash";
 
 const DashboardTable = () => {
   const [data, setData] = useState([]);
+  const [filterData, setFilterData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -10,9 +13,30 @@ const DashboardTable = () => {
       const jsonData = await res.data;
       console.log(jsonData);
       setData(jsonData);
+      setFilterData(jsonData);
     }
     fetchData();
   }, []);
+
+  const debouncedFilterData = _.debounce((searchTerm) => {
+    setFilterData(
+      data.filter(
+        (item) =>
+          item.selectedProject.value
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.selectedModule.value
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.selectedCategory.value
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.issueTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.contact.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, 500);
+  console.log(data);
 
   return (
     <div>
@@ -21,6 +45,10 @@ const DashboardTable = () => {
           type="text"
           placeholder="Search..."
           className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            debouncedFilterData(e.target.value);
+          }}
         />
       </div>
       <div className="px-3">
@@ -60,7 +88,7 @@ const DashboardTable = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {filterData.map((item, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border border-gray-300">
                     {item.id}
