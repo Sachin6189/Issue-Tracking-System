@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { isLength } from "validator";
 import { useNavigate } from "react-router-dom";
+import users from "./user.json";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -17,33 +18,17 @@ const LoginForm = () => {
     const isValid = validateInput();
 
     if (isValid) {
-      try {
-        if (username === "sachin" && password === "sachin") {
-          navigate("/dashboard");
-        } else {
-          setPasswordError("Invalid Credentials");
-        }
-      } catch (error) {
-        alert(error);
+      const user = users.find(
+        (user) => user.username === username && user.password === password
+      );
+
+      if (user) {
+        navigate("/dashboard");
+      } else {
+        setPasswordError("Invalid Credentials");
       }
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const isValid = validateInput();
-
-  //   if (isValid) {
-  //     try {
-  //       const response = await axios.post("/api/login", { username, password });
-  //       // Handle successful login
-  //     } catch (error) {
-  //       // Handle error
-  //     }
-  //   }
-  // };
-
   const validateInput = () => {
     const usernameValue = username.trim();
     const passwordValue = password.trim();
