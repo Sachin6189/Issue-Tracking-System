@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,10 +8,12 @@ import Pending from "../../components/assets/pending.gif";
 import Unclaimed from "../../components/assets/unclaimed.gif";
 import Resolved from "../../components/assets/resolved.gif";
 import Arrow from "../../components/assets/arrow-right.png";
+import axios from "axios";
 
 const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [tickets, setTickets] = useState([]);
 
   const navigate = useNavigate();
 
@@ -24,10 +26,19 @@ const Main = () => {
   };
 
   const raiseTicket = () => {
-    navigate('/dashboard/raiseTicket');
+    navigate("/dashboard/raiseTicket");
   };
 
-  const NoOfTicketsRaised = 0;
+  useEffect(() => {
+    async function fetchData() {
+      const res = await axios.get("/Data/data.json");
+      const jsonData = await res.data;
+      setTickets(jsonData);
+    }
+    fetchData();
+  }, []);
+
+  const NoOfTicketsRaised = tickets.length;
   const OpenTickets = 0;
   const TicketsPending = 0;
   const UnclaimedTickets = 0;
@@ -41,7 +52,7 @@ const Main = () => {
           onClick={raiseTicket}
           className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
         >
-         Raise New Ticket
+          Raise New Ticket
         </button>
         <div className="flex font-[fangsong] pr-3">
           <div className="mr-3 ">
