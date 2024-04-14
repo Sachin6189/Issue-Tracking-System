@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import popupbg from "../assets/bg1.jpg";
+import React, { useEffect, useState } from "react";
+
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -20,7 +20,12 @@ const ReplyTicket = ({ issue, onClose }) => {
     return URL.createObjectURL(blob);
   };
 
-  setImageData(imageData);
+  useEffect(()=>{
+    if(issue.imageData){
+      setImageData(issue.imageData)
+    }
+
+  },[issue.imageData])
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center font-[fangsong] text-xl bg-gray-900 bg-opacity-75">
