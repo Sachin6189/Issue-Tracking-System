@@ -4,22 +4,6 @@ import React, { useEffect, useState } from "react";
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
 
-  const dataURLtoFile = (dataurl, fileName) => {
-    var arr = dataurl.split(","),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bsdr = atob(arr[1]),
-      n = bsdr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bsdr.charCodeAt(n);
-    }
-    return new File([u8arr], fileName, { type: mime });
-  };
-
-  const createObjectURL = (blob) => {
-    return URL.createObjectURL(blob);
-  };
-
   useEffect(()=>{
     if(issue.imageData){
       setImageData(issue.imageData)
@@ -83,9 +67,7 @@ const ReplyTicket = ({ issue, onClose }) => {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">File:</h3>
             {imageData && (
-              <img
-                src={createObjectURL(dataURLtoFile(imageData, "image.png"))}
-              />
+             <img src={issue.imageData} />
             )}
           </div>
         </div>
