@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import userLogo from  '../assets/user.png';
+import { Link, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
+import userLogo from "../assets/user.png";
 import Sidebar from "../assets/sidebar.png";
 import Logo from "../assets/logo.png";
 
 const Navbar = ({ toggleSidebar }) => {
+  const navigate = useNavigate();
+
   const [showSignout, setShowSignout] = useState(false);
   const username = "Sachin Kumar";
 
   const handleSignout = () => {
-    console.log("Signout clicked");
+    navigate("/");
     setShowSignout(false);
   };
 
@@ -16,7 +19,9 @@ const Navbar = ({ toggleSidebar }) => {
     <div>
       <nav className="bg-gray-800 p-1 flex justify-between items-center sticky z-10 pr-4">
         <div className="flex items-center gap-4 ">
-          <img src={Logo} alt="Logo" className="h-10 rounded-xl ml-2 " />
+          <Link to="/dashboard">
+            <img src={Logo} alt="Logo" className="h-10 rounded-xl ml-2 " />
+          </Link>
         </div>
         <div className="flex items-center gap-4 relative">
           <div className="relative">

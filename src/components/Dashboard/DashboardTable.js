@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
+import ReplyTicket from "./ReplyTicket";
 
 const DashboardTable = () => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+
+  const handleIssueClick = (issue) => {
+    setSelectedIssue(issue);
+  };
 
   useEffect(() => {
     async function fetchData() {
       const res = await axios.get("/Data/data.json");
       const jsonData = await res.data;
-      console.log(jsonData);
-      setData(jsonData);
-      setFilterData(jsonData);
+      const sortedData = jsonData.sort(
+        (a, b) => new Date(b.raisedTime) - new Date(a.raisedTime)
+      );
+      setData(sortedData);
+      setFilterData(sortedData);
     }
     fetchData();
   }, []);
@@ -35,8 +45,14 @@ const DashboardTable = () => {
           item.contact.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
+    setCurrentPage(1);
   }, 500);
-  console.log(data);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filterData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -44,7 +60,7 @@ const DashboardTable = () => {
         <input
           type="text"
           placeholder="Search..."
-          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none font-[fangsong] focus:ring focus:border-blue-500"
           onChange={(e) => {
             setSearchTerm(e.target.value);
             debouncedFilterData(e.target.value);
@@ -63,35 +79,25 @@ const DashboardTable = () => {
                 <th className="px-4 py-2 border border-gray-300">
                   Issue Title
                 </th>
-                {/* <th className="px-4 py-2 border border-gray-300">Status</th>
-                <th className="px-4 py-2 border border-gray-300">Raiser</th>
-                <th className="px-4 py-2 border border-gray-300">Location</th> */}
                 <th className="px-4 py-2 border border-gray-300">
                   Contact No.
                 </th>
-                {/* <th className="px-4 py-2 border border-gray-300">
-                  Support Persons
-                </th>
-                <th className="px-4 py-2 border border-gray-300">
-                  Elapsed Time
-                </th> */}
                 <th className="px-4 py-2 border border-gray-300">
                   Raised Time
                 </th>
-                {/* <th className="px-4 py-2 border border-gray-300">
-                  Solution Time
-                </th>
-                <th className="px-4 py-2 border border-gray-300">
-                  Consume Time(minutes)
-                </th> */}
                 <th className="px-4 py-2 border border-gray-300">Action</th>
               </tr>
             </thead>
             <tbody>
-              {filterData.map((item, index) => (
+              {currentItems.map((item, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border border-gray-300">
-                    {item.id}
+                    <span
+                      className="text-blue-700 underline cursor-pointer"
+                      onClick={() => handleIssueClick(item)}
+                    >
+                      {item.id}
+                    </span>
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
                     {item.selectedProject.value}
@@ -103,35 +109,19 @@ const DashboardTable = () => {
                     {item.selectedCategory.value}
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    {item.issueTitle}
+                    <span
+                      className="text-blue-700 underline cursor-pointer"
+                      onClick={() => handleIssueClick(item)}
+                    >
+                      {item.issueTitle}
+                    </span>
                   </td>
-                  {/* <td className="px-4 py-2 border border-gray-300">
-                    {item.status}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.raiser}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.location}
-                  </td> */}
                   <td className="px-4 py-2 border border-gray-300">
                     {item.contact}
                   </td>
-                  {/* <td className="px-4 py-2 border border-gray-300">
-                    {item.supportPersons}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.elapsedTime}
-                  </td> */}
                   <td className="px-4 py-2 border border-gray-300">
                     {item.raisedTime}
                   </td>
-                  {/* <td className="px-4 py-2 border border-gray-300">
-                    {item.solutionTime}
-                  </td> */}
-                  {/* <td className="px-4 py-2 border border-gray-300">
-                    {item.consumeTime}
-                  </td> */}
                   <td className="px-4 py-2 border border-gray-300">
                     Action Button
                   </td>
@@ -142,13 +132,27 @@ const DashboardTable = () => {
         </div>
       </div>
       <div className="flex justify-between px-3 py-4">
-        <button className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded">
+        <button
+          className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Previous
         </button>
-        <button className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded">
+        <button
+          className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
+          onClick={() => paginate(currentPage + 1)}
+          disabled={indexOfLastItem >= filterData.length}
+        >
           Next
         </button>
       </div>
+      {selectedIssue && (
+        <ReplyTicket
+          issue={selectedIssue}
+          onClose={() => setSelectedIssue(null)}
+        />
+      )}
     </div>
   );
 };
