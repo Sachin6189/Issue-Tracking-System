@@ -18,6 +18,7 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [IsSubmitted, setIsSubmitted] = useState(false);
 
   const username = "Sachin Kumar";
+  const EmpID = "928810"
 
   useEffect(() => {
     if (issue.imageData) {
@@ -42,6 +43,12 @@ const ReplyTicket = ({ issue, onClose }) => {
 
   const handleSave = async () => {
     try {
+      if (!ticketStatus || !department || !description) {
+        throw new Error(
+          "Ticket status, department, and solution are mandatory fields."
+        );
+      }
+
       const replyData = {
         ticketStatus,
         ccList,
@@ -56,19 +63,14 @@ const ReplyTicket = ({ issue, onClose }) => {
       setIsSubmitted(true);
     } catch (error) {
       console.error("Error sending data:", error);
-      alert("Error sending data. Please try again later.");
+      alert(error.message);
     }
   };
-
-  const removeHTMLTags = () =>{
-
-  }
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
     setDescription(data);
   }, 500);
-
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -81,14 +83,10 @@ const ReplyTicket = ({ issue, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-900 bg-opacity-75">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-3xl w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
-        <div className="px-6 py-4 bg-gray-800 text-[#47c8c3] flex items-center justify-between">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
+        <div className="px-6 py- bg-gray-800 text-[#47c8c3] flex items-center justify-between">
           <h2 className="text-lg font-semibold">Ticket Number: {issue.id}</h2>
           <div className="flex items-center gap-4">
-            <img src={userlogo} alt="" className="h-8 w-8 rounded-full" />
-            <span className="text-lg font-semibold text-[#47c8c3] gap-5">
-              {username}
-            </span>
             <button
               className="px-2 py-1 rounded-full hover:bg-red-500 transition-colors duration-500 h-10 w-10"
               onClick={onClose}
@@ -114,32 +112,44 @@ const ReplyTicket = ({ issue, onClose }) => {
             </p>
           </div>
           <div>
-            <div className="pt-2">
+            <div>
               <div className="mt-2 bg-red-500 w-48 pl-2 rounded-lg">
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">
                   {issue.raisedTime}
                 </h4>
               </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">
-                Description:
-              </h3>
-              <p className="text-gray-500 font-sans"> {issue.description.replace(/<[^>]*>/g, '')}</p>
+              <div className="flex gap-3 py-4">
+                <img src={userlogo} alt="" className="h-8 w-8 rounded-full" />
+                <span className="text-lg font-semibold text-gray-800 gap-5">
+                  {username} {" "}<span className="font-medium">{EmpID}</span> 
+                </span>
+              </div>
             </div>
-            <div className="flex items-center mt-4">
-              {imageData && (
-                <h3 className="text-lg font-semibold text-gray-900 mr-2">
-                  File:
+            <div className="bg-gray-200 p-4 rounded-md">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">
+                  Description:
                 </h3>
-              )}
-              {imageData && (
-                <button
-                  className="px-2 py-2 h-10 w-10"
-                  onClick={handleDownload}
-                >
-                  <img src={downloadImg} alt="" />
-                </button>
-              )}
+                <p
+                  className="text-gray-500 font-sans"
+                  dangerouslySetInnerHTML={{ __html: issue.description }}
+                ></p>
+              </div>
+              <div className="flex items-center mt-4">
+                {imageData && (
+                  <h3 className="text-lg font-semibold text-gray-900 mr-2">
+                    File:
+                  </h3>
+                )}
+                {imageData && (
+                  <button
+                    className="px-2 py-2 h-10 w-10"
+                    onClick={handleDownload}
+                  >
+                    <img src={downloadImg} alt="" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -164,7 +174,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="ticketStatus"
                     className="flex text-sm font-medium text-gray-700"
                   >
-                    Ticket Status:
+                    Ticket Status <span className="text-red-500">*</span>:
                   </label>
                   <select
                     id="ticketStatus"
@@ -212,7 +222,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="department"
                     className="flex text-sm font-medium text-gray-700"
                   >
-                    Department:
+                    Department <span className="text-red-500">*</span>:
                   </label>
                   <select
                     id="department"
@@ -230,7 +240,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="description"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Solution:
+                    Solution<span className="text-red-500">*</span>:
                   </label>
                   <CKEditor
                     editor={ClassicEditor}
