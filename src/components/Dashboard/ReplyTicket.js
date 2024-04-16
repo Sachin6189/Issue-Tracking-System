@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import close from "../../components/assets/close.gif";
 import downloadImg from "../../components/assets/downloadImg.gif";
 import userlogo from "../../components/assets/flaticon3.png";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import _ from "lodash";
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -13,7 +15,7 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [solutionTime, setSolutionTime] = useState("");
   const [department, setDepartment] = useState("");
   const [description, setDescription] = useState("");
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [IsSubmitted, setIsSubmitted] = useState(false);
 
   const username = "Sachin Kumar";
 
@@ -38,20 +40,43 @@ const ReplyTicket = ({ issue, onClose }) => {
     setShowForm(false);
   };
 
-  const handleSave = () => {
-    console.log({
-      ticketStatus,
-      ccList,
-      solutionTime,
-      department,
-      description,
-      uploadedFile,
-    });
+  const handleSave = async () => {
+    try {
+      const replyData = {
+        ticketStatus,
+        ccList,
+        solutionTime,
+        department,
+        description,
+        imageData,
+      };
+
+      const res = await axios.post("http://localhost:5000/reply", replyData);
+      alert(res.data);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error sending data:", error);
+      alert("Error sending data. Please try again later.");
+    }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setUploadedFile(file);
+  const removeHTMLTags = () =>{
+
+  }
+
+  const debouncedOnChange = _.debounce((event, editor) => {
+    const data = editor.getData();
+    setDescription(data);
+  }, 500);
+
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageData(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -99,7 +124,7 @@ const ReplyTicket = ({ issue, onClose }) => {
               <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">
                 Description:
               </h3>
-              <p className="text-gray-500 font-sans">{issue.description}</p>
+              <p className="text-gray-500 font-sans"> {issue.description.replace(/<[^>]*>/g, '')}</p>
             </div>
             <div className="flex items-center mt-4">
               {imageData && (
@@ -121,7 +146,7 @@ const ReplyTicket = ({ issue, onClose }) => {
         <div>
           <div className="px-6 bg-gray-200 py-4 flex justify-end">
             <button
-              className={`bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold py-2 px-4 rounded ${
+              className={`bg-gray-800 hover:bg-gray-950 text-white font-sans font-bold py-2 px-4 rounded ${
                 showForm ? "hidden" : ""
               }`}
               onClick={handleReplyClick}
@@ -130,12 +155,11 @@ const ReplyTicket = ({ issue, onClose }) => {
             </button>
           </div>
         </div>
-
         <div>
           {showForm && (
-            <div className="bg-gray-200 shadow-xl rounded-md border my-6 mx-6  ">
-              <div className="p-6">
-                <div className="mb-4">
+            <div className="bg-gray-200 shadow-xl rounded-md border my-6 mx-6">
+              <div className="p-6 flex flex-wrap">
+                <div className="mb-4 flex-1 mr-4">
                   <label
                     htmlFor="ticketStatus"
                     className="flex text-sm font-medium text-gray-700"
@@ -152,7 +176,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 flex-1">
                   <label
                     htmlFor="ccList"
                     className="flex text-sm font-medium text-gray-700"
@@ -167,7 +191,8 @@ const ReplyTicket = ({ issue, onClose }) => {
                     className="mt-1 flex w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div className="w-full"></div>
+                <div className="mb-4 flex-1 mr-4">
                   <label
                     htmlFor="solutionTime"
                     className="flex text-sm font-medium text-gray-700"
@@ -182,7 +207,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     className="mt-1 flex w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 flex-1">
                   <label
                     htmlFor="department"
                     className="flex text-sm font-medium text-gray-700"
@@ -200,7 +225,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     <option value="IT">IT</option>
                   </select>
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 w-full">
                   <label
                     htmlFor="description"
                     className="block text-sm font-medium text-gray-700"
@@ -213,13 +238,10 @@ const ReplyTicket = ({ issue, onClose }) => {
                     onReady={(editor) => {
                       console.log("Editor is ready to use!", editor);
                     }}
-                    onChange={(event, editor) => {
-                      const data = editor.getData();
-                      setDescription(data);
-                    }}
+                    onChange={debouncedOnChange}
                   />
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 w-full">
                   <label
                     htmlFor="uploadFile"
                     className="block text-sm font-medium text-gray-700"
@@ -233,9 +255,9 @@ const ReplyTicket = ({ issue, onClose }) => {
                     className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between w-full">
                   <button
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md"
+                    className="px-4 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
                     onClick={handleSave}
                   >
                     Save

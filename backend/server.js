@@ -9,8 +9,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const pathToDirectory = "../public/Data";
-const dataFilePath = path.join(pathToDirectory, "data.json");
+const pathToDataDirectory = "../public/Data";
+const dataFilePath = path.join(pathToDataDirectory, "data.json");
+const replyDataFilePath = path.join(pathToDataDirectory, "replyData.json");
 
 app.post("/submit", (req, res) => {
   const data = req.body;
@@ -24,6 +25,19 @@ app.post("/submit", (req, res) => {
     jsonData.push(data);
     fs.writeFileSync(dataFilePath, JSON.stringify(jsonData, null, 2));
     res.send("Data saved successfully.");
+  }
+});
+
+app.post("/reply", (req, res) => {
+  const replyData = req.body;
+
+  if (!fs.existsSync(replyDataFilePath)) {
+    fs.writeFileSync(replyDataFilePath, JSON.stringify([replyData], null, 2));
+  } else {
+    const jsonData = JSON.parse(fs.readFileSync(replyDataFilePath, "utf8"));
+    jsonData.push(replyData);
+    fs.writeFileSync(replyDataFilePath, JSON.stringify(jsonData, null, 2));
+    res.send("Reply data saved successfully.");
   }
 });
 

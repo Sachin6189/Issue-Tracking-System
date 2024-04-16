@@ -22,7 +22,7 @@ const DashboardTable = () => {
 
      
       const sortedData = jsonData.sort(
-        (a, b) => new Date(b.raisedTime) - new Date(a.raisedTime)
+        (a, b) => new Date(a.raisedTime) - new Date(b.raisedTime)
       );
 
       setData(sortedData);
@@ -94,8 +94,8 @@ const DashboardTable = () => {
             </thead>
             <tbody>
               {currentItems.map((item, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2 border border-gray-300">
+                <tr key={index} className="odd:bg-white even:bg-gray-200">
+                  <td className="px-4 py-2 border border-gray-300 ">
                     <span
                       className="hover:text-blue-700 hover:underline cursor-pointer"
                       onClick={() => handleIssueClick(item)}

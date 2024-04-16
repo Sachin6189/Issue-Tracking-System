@@ -31,9 +31,16 @@ const RaiseTicket = () => {
 
   const handleSubmit = async () => {
     const contactRegex = /^\d{10}$/;
-    if (!selectedProject || !selectedModule || !selectedCategory || !contact || !issueTitle || !description) {
+    if (
+      !selectedProject ||
+      !selectedModule ||
+      !selectedCategory ||
+      !contact ||
+      !issueTitle ||
+      !description
+    ) {
       alert("Please fill in all compulsory fields marked with *");
-      return;
+      return; 
     }
 
     if (!contactRegex.test(contact)) {
@@ -124,15 +131,15 @@ const RaiseTicket = () => {
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
     // console.log({ event, editor, data });
-    const cleanData = data.replace(/<[^>]*>/g,"");
-    setDescription(cleanData);
+    // const cleanData = data.replace(/<[^>]*>/g, "");
+    setDescription(data);
   }, 500);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImageData(reader.result)
+      setImageData(reader.result);
     };
     reader.readAsDataURL(file);
   };
