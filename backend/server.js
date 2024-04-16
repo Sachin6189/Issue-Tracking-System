@@ -15,7 +15,7 @@ const dataFilePath = path.join(pathToDirectory, "data.json");
 app.post("/submit", (req, res) => {
   const data = req.body;
   data.id = Math.floor(Math.random() * 9000 + 1000);
-  data.raisedTime = moment().tz("Asia/Kolkata").format();
+  data.raisedTime = moment().tz("Asia/Kolkata").format("DD-MM-YYYY hh:mm A");
 
   if (!fs.existsSync(dataFilePath)) {
     fs.writeFileSync(dataFilePath, JSON.stringify([data], null, 2));

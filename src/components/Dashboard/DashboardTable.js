@@ -19,12 +19,16 @@ const DashboardTable = () => {
     async function fetchData() {
       const res = await axios.get("/Data/data.json");
       const jsonData = await res.data;
+
+     
       const sortedData = jsonData.sort(
         (a, b) => new Date(b.raisedTime) - new Date(a.raisedTime)
       );
+
       setData(sortedData);
       setFilterData(sortedData);
     }
+
     fetchData();
   }, []);
 
