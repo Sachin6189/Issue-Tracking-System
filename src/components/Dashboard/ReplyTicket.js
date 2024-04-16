@@ -84,7 +84,7 @@ const ReplyTicket = ({ issue, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-900 bg-opacity-75">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
-        <div className="px-6 py- bg-gray-800 text-[#47c8c3] flex items-center justify-between">
+        <div className="px-6 py-4 bg-gray-800 text-[#47c8c3] flex items-center justify-between">
           <h2 className="text-lg font-semibold">Ticket Number: {issue.id}</h2>
           <div className="flex items-center gap-4">
             <button
