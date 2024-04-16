@@ -6,6 +6,7 @@ import userlogo from "../../components/assets/flaticon3.png";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import _ from "lodash";
+import Select from 'react-select';
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -16,9 +17,18 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [department, setDepartment] = useState("");
   const [description, setDescription] = useState("");
   const [IsSubmitted, setIsSubmitted] = useState(false);
+  const [approvalRequired, setApprovalRequired] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const username = "Sachin Kumar";
   const EmpID = "928810"
+
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    // Add more options as needed
+  ];
 
   useEffect(() => {
     if (issue.imageData) {
@@ -56,6 +66,8 @@ const ReplyTicket = ({ issue, onClose }) => {
         department,
         description,
         imageData,
+        approvalRequired,
+        selectedOption: selectedOption ? selectedOption.value : null,
       };
 
       const res = await axios.post("http://localhost:5000/reply", replyData);
@@ -81,69 +93,78 @@ const ReplyTicket = ({ issue, onClose }) => {
     reader.readAsDataURL(file);
   };
 
+  const handleApprovalChange = (event) => {
+    setApprovalRequired(event.target.checked);
+    if (!event.target.checked) {
+      setSelectedOption(null);
+    }
+  };
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-900 bg-opacity-75">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
-        <div className="px-6 py-4 bg-gray-800 text-[#47c8c3] flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Ticket Number: {issue.id}</h2>
-          <div className="flex items-center gap-4">
-            <button
-              className="px-2 py-1 rounded-full hover:bg-red-500 transition-colors duration-500 h-10 w-10"
-              onClick={onClose}
-            >
-              <img src={close} alt="close" />
-            </button>
-          </div>
+      <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
+        <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Ticket Number: {issue.id}</h2>
+          <button
+            className="px-2 py-1 rounded-full hover:bg-red-500 transition-colors duration-500 h-10 w-10"
+            onClick={onClose}
+          >
+            <img src={close} alt="close" />
+          </button>
         </div>
         <div className="px-6 py-4">
-          <div className="bg-gray-200 rounded-lg p-4 mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-gray-100 rounded-lg p-4 mb-4 shadow-md">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
               Issue Title:{" "}
               <span className="text-gray-600">{issue.issueTitle}</span>
             </h3>
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-gray-600 text-base mb-2">
               Project: {issue.selectedProject.value}
             </p>
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-gray-600 text-base mb-2">
               Module: {issue.selectedModule.value}
             </p>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-base">
               Category: {issue.selectedCategory.value}
             </p>
           </div>
           <div>
             <div>
               <div className="mt-2 bg-red-500 w-48 pl-2 rounded-lg">
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                <h4 className="text-lg font-semibold text-white mb-2">
                   {issue.raisedTime}
                 </h4>
               </div>
-              <div className="flex gap-3 py-4">
-                <img src={userlogo} alt="" className="h-8 w-8 rounded-full" />
-                <span className="text-lg font-semibold text-gray-800 gap-5">
+              <div className="flex gap-3 py-4 items-center">
+                <img src={userlogo} alt="" className="h-10 w-10 rounded-full" />
+                <span className="text-xl font-semibold text-gray-800 gap-5">
                   {username} {" "}<span className="font-medium">{EmpID}</span> 
                 </span>
               </div>
             </div>
-            <div className="bg-gray-200 p-4 rounded-md">
+            <div className="bg-gray-100 p-4 rounded-md shadow-md">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">
+                <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2">
                   Description:
                 </h3>
                 <p
-                  className="text-gray-500 font-sans"
+                  className="text-gray-600 font-sans"
                   dangerouslySetInnerHTML={{ __html: issue.description }}
                 ></p>
               </div>
               <div className="flex items-center mt-4">
                 {imageData && (
-                  <h3 className="text-lg font-semibold text-gray-900 mr-2">
+                  <h3 className="text-lg font-semibold text-gray-800 mr-2">
                     File:
                   </h3>
                 )}
                 {imageData && (
                   <button
-                    className="px-2 py-2 h-10 w-10"
+                    className="px-2 py-2 h-10 w-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full"
                     onClick={handleDownload}
                   >
                     <img src={downloadImg} alt="" />
@@ -154,9 +175,9 @@ const ReplyTicket = ({ issue, onClose }) => {
           </div>
         </div>
         <div>
-          <div className="px-6 bg-gray-200 py-4 flex justify-end">
+          <div className="px-6 bg-gray-100 py-4 flex justify-end">
             <button
-              className={`bg-gray-800 hover:bg-gray-950 text-white font-sans font-bold py-2 px-4 rounded ${
+              className={`bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded ${
                 showForm ? "hidden" : ""
               }`}
               onClick={handleReplyClick}
@@ -167,7 +188,7 @@ const ReplyTicket = ({ issue, onClose }) => {
         </div>
         <div>
           {showForm && (
-            <div className="bg-gray-200 shadow-xl rounded-md border my-6 mx-6">
+            <div className="bg-gray-100 shadow-xl rounded-md border my-6 mx-6">
               <div className="p-6 flex flex-wrap">
                 <div className="mb-4 flex-1 mr-4">
                   <label
@@ -235,6 +256,50 @@ const ReplyTicket = ({ issue, onClose }) => {
                     <option value="IT">IT</option>
                   </select>
                 </div>
+                <div className="mb-4 w-full flex items-center">
+                  <label htmlFor="approvalRequired" className="block text-sm font-medium text-gray-700 mr-2">
+                    Approval Required:
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="approvalRequired"
+                    checked={approvalRequired}
+                    onChange={handleApprovalChange}
+                    className="mt-1 form-checkbox h-5 w-5 text-indigo-600"
+                  />
+                </div>
+                <div className="mb-4 w-full">
+                  <label htmlFor="searchableDropdown" className="block text-sm font-medium text-gray-700">
+                   
+                  </label>
+                  <Select
+                    options={options}
+                    value={selectedOption}
+                    onChange={handleOptionChange}
+                    isClearable
+                    isSearchable
+                    isDisabled={!approvalRequired}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        border: '1px solid #e5e7eb',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          border: '1px solid #a0aec0',
+                        },
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isSelected ? '#6366f1' : 'white',
+                        color: state.isSelected ? 'white' : '#4b5563',
+                        '&:hover': {
+                          backgroundColor: '#e0e7ff',
+                          color: '#1e293b',
+                        },
+                      }),
+                    }}
+                  />
+                </div>
                 <div className="mb-4 w-full">
                   <label
                     htmlFor="description"
@@ -246,7 +311,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     editor={ClassicEditor}
                     data={description}
                     onReady={(editor) => {
-                      console.log("Editor is ready to use!", editor);
+                      console.log('Editor is ready to use!', editor);
                     }}
                     onChange={debouncedOnChange}
                   />
@@ -267,7 +332,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                 </div>
                 <div className="flex justify-between w-full">
                   <button
-                    className="px-4 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md"
                     onClick={handleSave}
                   >
                     Save
