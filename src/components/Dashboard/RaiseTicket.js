@@ -263,7 +263,9 @@ const RaiseTicket = () => {
                   onReady={(editor) => {
                     console.log("Editor is ready to use!", editor);
                   }}
+                  
                   onChange={debouncedOnChange}
+                  
                 />
               </div>
               <div className="w-full mt-1 mb-1">

@@ -20,7 +20,6 @@ const DashboardTable = () => {
       const res = await axios.get("/Data/data.json");
       const jsonData = await res.data;
 
-     
       const sortedData = jsonData.sort(
         (a, b) => new Date(a.raisedTime) - new Date(b.raisedTime)
       );
@@ -58,99 +57,80 @@ const DashboardTable = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const totalPages = Math.ceil(filterData.length / itemsPerPage);
+
   return (
-    <div>
-      <div className="flex justify-end pr-3 pt-4">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-end mb-4">
         <input
           type="text"
           placeholder="Search..."
-          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none font-[fangsong] focus:ring focus:border-blue-500"
+          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
           onChange={(e) => {
             setSearchTerm(e.target.value);
             debouncedFilterData(e.target.value);
           }}
         />
       </div>
-      <div className="px-3">
-        <div className="overflow-x-auto text-sm font-[fangsong] pt-5 rounded">
-          <table className="table-auto w-full border-collapse border border-gray-300 shadow-md">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 border border-gray-300">Ticket No.</th>
-                <th className="px-4 py-2 border border-gray-300">Project</th>
-                <th className="px-4 py-2 border border-gray-300">Module</th>
-                <th className="px-4 py-2 border border-gray-300">Category</th>
-                <th className="px-4 py-2 border border-gray-300">
-                  Issue Title
-                </th>
-                <th className="px-4 py-2 border border-gray-300">
-                  Contact No.
-                </th>
-                <th className="px-4 py-2 border border-gray-300">
-                  Raised Time
-                </th>
-                <th className="px-4 py-2 border border-gray-300">Action</th>
+      <div className="overflow-x-auto rounded-lg shadow-xl">
+        <table className="w-full table-auto border-collapse border border-gray-300 ">
+          <thead className="bg-gray-800 text-white">
+            <tr>
+              <th className="px-4 py-2 text-left">Ticket No.</th>
+              <th className="px-4 py-2 text-left">Project</th>
+              <th className="px-4 py-2 text-left">Module</th>
+              <th className="px-4 py-2 text-left">Category</th>
+              <th className="px-4 py-2 text-left">Issue Title</th>
+              <th className="px-4 py-2 text-left">Contact No.</th>
+              <th className="px-4 py-2 text-left">Raised Time</th>
+              <th className="px-4 py-2 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((item, index) => (
+              <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}>
+                <td className="px-4 py-2">{item.id}</td>
+                <td className="px-4 py-2">{item.selectedProject.value}</td>
+                <td className="px-4 py-2">{item.selectedModule.value}</td>
+                <td className="px-4 py-2">{item.selectedCategory.value}</td>
+                <td className="px-4 py-2 cursor-pointer text-blue-500 hover:underline" onClick={() => handleIssueClick(item)}>{item.issueTitle}</td>
+                <td className="px-4 py-2">{item.contact}</td>
+                <td className="px-4 py-2">{item.raisedTime}</td>
+                <td className="px-4 py-2">Action Button</td>
               </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((item, index) => (
-                <tr key={index} className="odd:bg-white even:bg-gray-200">
-                  <td className="px-4 py-2 border border-gray-300 ">
-                    <span
-                      className="hover:text-blue-700 hover:underline cursor-pointer"
-                      onClick={() => handleIssueClick(item)}
-                    >
-                      {item.id}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.selectedProject.value}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.selectedModule.value}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.selectedCategory.value}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    <span
-                      className="hover:text-blue-700 hover:underline cursor-pointer"
-                      onClick={() => handleIssueClick(item)}
-                    >
-                      {item.issueTitle}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.contact}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {item.raisedTime}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    Action Button
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div className="flex justify-between px-3 py-4">
+
+      <div className="flex justify-center items-center mt-8 space-x-4">
         <button
-          className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
+          className={`${
+            currentPage === 1
+              ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700 text-white"
+          } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label="Previous Page"
         >
           Previous
         </button>
+        <span className="text-gray-800 font-semibold">{`Page ${currentPage} of ${totalPages}`}</span>
         <button
-          className="bg-gray-800 hover:bg-gray-950 text-[#47c8c3] font-bold font-[fangsong] py-2 px-4 rounded"
+          className={`${
+            currentPage === totalPages
+              ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700 text-white"
+          } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
           onClick={() => paginate(currentPage + 1)}
-          disabled={indexOfLastItem >= filterData.length}
+          disabled={currentPage === totalPages}
+          aria-label="Next Page"
         >
           Next
         </button>
       </div>
+
       {selectedIssue && (
         <ReplyTicket
           issue={selectedIssue}

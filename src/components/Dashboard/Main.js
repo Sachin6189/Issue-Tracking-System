@@ -10,6 +10,7 @@ import Resolved from "../../components/assets/resolved.gif";
 import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
 
+
 const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
