@@ -64,5 +64,25 @@
     "imageData": "",
     "approvalRequired": true,
     "selectedOption": "option1"
+  },
+  {
+    "ticketStatus": "Closed",
+    "ccList": "cgv",
+    "solutionTime": "20",
+    "department": "",
+    "description": "<p>dsgrd</p>",
+    "imageData": "",
+    "approvalRequired": true,
+    "selectedOption": "Sachin"
+  },
+  {
+    "ticketStatus": "Closed",
+    "ccList": "hjwqvk",
+    "solutionTime": "28``",
+    "department": "",
+    "description": "<p>basdvam</p>",
+    "imageData": "",
+    "approvalRequired": true,
+    "selectedOption": "Sachin"
   }
 ]

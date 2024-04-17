@@ -19,16 +19,10 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [IsSubmitted, setIsSubmitted] = useState(false);
   const [approvalRequired, setApprovalRequired] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [employees, setEmployees] = useState([]);
 
   const username = "Sachin Kumar";
   const EmpID = "928810";
-
-  const options = [
-    { value: "option1", label: "Option 1" },
-    { value: "option2", label: "Option 2" },
-    { value: "option3", label: "Option 3" },
-    // Add more options as needed
-  ];
 
   useEffect(() => {
     if (issue.imageData) {
@@ -104,9 +98,19 @@ const ReplyTicket = ({ issue, onClose }) => {
     setSelectedOption(option);
   };
 
+  const fetchEmployees = async () => {
+    const response = await axios.get("/Data/employee.json");
+    setEmployees(response.data.employeeDetails);
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-900 bg-opacity-75">
       <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
+      <div className="max-h-[99vh] overflow-y-auto">
         <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
           <h2 className="text-2xl font-bold">Ticket Number: {issue.id}</h2>
           <button
@@ -207,8 +211,8 @@ const ReplyTicket = ({ issue, onClose }) => {
                   >
                     <option value="Open">Open</option>
                     <option value="Closed">Closed</option>
-                    <option value="Closed">Rejected</option>
-                    <option value="Closed">Re-Opened</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Re-Opened">Re-Opened</option>
                   </select>
                 </div>
                 <div className="mb-4 flex-1">
@@ -256,9 +260,9 @@ const ReplyTicket = ({ issue, onClose }) => {
                     className="mt-1 flex w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
                     <option value="Support">Support</option>
-                    <option value="HR">Bug</option>
-                    <option value="IT">Data Dump</option>
-                    <option value="IT">User Doubt</option>
+                    <option value="Bug">Bug</option>
+                    <option value="Data Dump">Data Dump</option>
+                    <option value="User Doubt">User Doubt</option>
                   </select>
                 </div>
                 <div className="mb-4 w-full flex items-center">
@@ -278,13 +282,17 @@ const ReplyTicket = ({ issue, onClose }) => {
                 </div>
                 <div className="mb-4 w-full">
                   <Select
-                    options={options}
+                    
                     value={selectedOption}
                     onChange={handleOptionChange}
                     isClearable
                     isSearchable
                     isDisabled={!approvalRequired}
                     placeholder = "...Select Employee Name..."
+                    options={employees.map(employee => ({
+                      value: employee.empName,
+                      label: employee.empName
+                    }))}
                     styles={{
                       control: (provided) => ({
                         ...provided,
@@ -354,6 +362,7 @@ const ReplyTicket = ({ issue, onClose }) => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
