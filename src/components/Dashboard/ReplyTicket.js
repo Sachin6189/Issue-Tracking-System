@@ -53,9 +53,9 @@ const ReplyTicket = ({ issue, onClose }) => {
 
   const handleSave = async () => {
     try {
-      if (!ticketStatus || !department || !description) {
+      if (!description) {
         throw new Error(
-          "Ticket status, department, and solution are mandatory fields."
+          "solution is mandatory fields."
         );
       }
 
@@ -187,6 +187,8 @@ const ReplyTicket = ({ issue, onClose }) => {
           </div>
         </div>
         <div>
+
+          
           {showForm && (
             <div className="bg-gray-100 shadow-xl rounded-md border my-6 mx-6">
               <div className="p-6 flex flex-wrap">
@@ -195,7 +197,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="ticketStatus"
                     className="flex text-sm font-medium text-gray-700"
                   >
-                    Ticket Status <span className="text-red-500">*</span>:
+                    Ticket Status:
                   </label>
                   <select
                     id="ticketStatus"
@@ -245,7 +247,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="department"
                     className="flex text-sm font-medium text-gray-700"
                   >
-                    Tag Issue Type<span className="text-red-500">*</span>:
+                    Tag Issue Type:
                   </label>
                   <select
                     id="department"

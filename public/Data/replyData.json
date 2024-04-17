@@ -54,5 +54,15 @@
     "department": "",
     "description": "",
     "imageData": ""
+  },
+  {
+    "ticketStatus": "Closed",
+    "ccList": "cc list",
+    "solutionTime": "20 min",
+    "department": "HR",
+    "description": "<p>something</p>",
+    "imageData": "",
+    "approvalRequired": true,
+    "selectedOption": "option1"
   }
 ]
