@@ -6,7 +6,7 @@ import userlogo from "../../components/assets/flaticon3.png";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import _ from "lodash";
-import Select from 'react-select';
+import Select from "react-select";
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -21,12 +21,12 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const username = "Sachin Kumar";
-  const EmpID = "928810"
+  const EmpID = "928810";
 
   const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
     // Add more options as needed
   ];
 
@@ -142,7 +142,7 @@ const ReplyTicket = ({ issue, onClose }) => {
               <div className="flex gap-3 py-4 items-center">
                 <img src={userlogo} alt="" className="h-10 w-10 rounded-full" />
                 <span className="text-xl font-semibold text-gray-800 gap-5">
-                  {username} {" "}<span className="font-medium">{EmpID}</span> 
+                  {username} <span className="font-medium">{EmpID}</span>
                 </span>
               </div>
             </div>
@@ -205,6 +205,8 @@ const ReplyTicket = ({ issue, onClose }) => {
                   >
                     <option value="Open">Open</option>
                     <option value="Closed">Closed</option>
+                    <option value="Closed">Rejected</option>
+                    <option value="Closed">Re-Opened</option>
                   </select>
                 </div>
                 <div className="mb-4 flex-1">
@@ -243,7 +245,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     htmlFor="department"
                     className="flex text-sm font-medium text-gray-700"
                   >
-                    Department <span className="text-red-500">*</span>:
+                    Tag Issue Type<span className="text-red-500">*</span>:
                   </label>
                   <select
                     id="department"
@@ -252,12 +254,16 @@ const ReplyTicket = ({ issue, onClose }) => {
                     className="mt-1 flex w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
                     <option value="Support">Support</option>
-                    <option value="HR">HR</option>
-                    <option value="IT">IT</option>
+                    <option value="HR">Bug</option>
+                    <option value="IT">Data Dump</option>
+                    <option value="IT">User Doubt</option>
                   </select>
                 </div>
                 <div className="mb-4 w-full flex items-center">
-                  <label htmlFor="approvalRequired" className="block text-sm font-medium text-gray-700 mr-2">
+                  <label
+                    htmlFor="approvalRequired"
+                    className="block text-sm font-medium text-gray-700 mr-2"
+                  >
                     Approval Required:
                   </label>
                   <input
@@ -269,9 +275,6 @@ const ReplyTicket = ({ issue, onClose }) => {
                   />
                 </div>
                 <div className="mb-4 w-full">
-                  <label htmlFor="searchableDropdown" className="block text-sm font-medium text-gray-700">
-                   
-                  </label>
                   <Select
                     options={options}
                     value={selectedOption}
@@ -279,22 +282,23 @@ const ReplyTicket = ({ issue, onClose }) => {
                     isClearable
                     isSearchable
                     isDisabled={!approvalRequired}
+                    placeholder = "...Select Employee Name..."
                     styles={{
                       control: (provided) => ({
                         ...provided,
-                        border: '1px solid #e5e7eb',
-                        boxShadow: 'none',
-                        '&:hover': {
-                          border: '1px solid #a0aec0',
+                        border: "1px solid #e5e7eb",
+                        boxShadow: "none",
+                        "&:hover": {
+                          border: "1px solid #a0aec0",
                         },
                       }),
                       option: (provided, state) => ({
                         ...provided,
-                        backgroundColor: state.isSelected ? '#6366f1' : 'white',
-                        color: state.isSelected ? 'white' : '#4b5563',
-                        '&:hover': {
-                          backgroundColor: '#e0e7ff',
-                          color: '#1e293b',
+                        backgroundColor: state.isSelected ? "#6366f1" : "white",
+                        color: state.isSelected ? "white" : "#4b5563",
+                        "&:hover": {
+                          backgroundColor: "#e0e7ff",
+                          color: "#1e293b",
                         },
                       }),
                     }}
@@ -311,7 +315,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                     editor={ClassicEditor}
                     data={description}
                     onReady={(editor) => {
-                      console.log('Editor is ready to use!', editor);
+                      console.log("Editor is ready to use!", editor);
                     }}
                     onChange={debouncedOnChange}
                   />
