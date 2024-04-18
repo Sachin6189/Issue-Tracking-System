@@ -31,7 +31,7 @@ const LoginForm = () => {
         }
       } catch (error) {
         console.error(error);
-        setPasswordError("An error occurred. Please try again.");
+        setPasswordError("Please enter valid credentials.");
       }
     }
   };
