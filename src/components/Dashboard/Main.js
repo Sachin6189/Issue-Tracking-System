@@ -10,6 +10,7 @@ import Resolved from "../../components/assets/resolved.gif";
 import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
 
+
 const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -41,7 +42,7 @@ const Main = () => {
   const NoOfTicketsRaised = tickets.length;
   const OpenTickets = 0;
   const TicketsPending = 0;
-  const UnclaimedTickets = 0;
+  const UnclaimedTickets = tickets.length;
   const TicketsResolvedByMyself = 0;
 
   return (

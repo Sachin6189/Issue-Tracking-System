@@ -20,12 +20,36 @@ const RaiseTicket = () => {
   const [projects, setProjects] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [description, setDescription] = useState("");
+  const [imageData, setImageData] = useState("");
+  const [contactError, setContactError] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
 
   const handleSubmit = async () => {
+    const contactRegex = /^\d{10}$/;
+    if (
+      !selectedProject ||
+      !selectedModule ||
+      !selectedCategory ||
+      !contact ||
+      !issueTitle ||
+      !description
+    ) {
+      alert("Please fill in all compulsory fields marked with *");
+      return; 
+    }
+
+    if (!contactRegex.test(contact)) {
+      setContactError("Contact number must be 10 digits");
+      return;
+    } else {
+      setContactError("");
+    }
+
     try {
       const response = await axios.post("http://localhost:5000/submit", {
         selectedEmployee,
@@ -34,8 +58,11 @@ const RaiseTicket = () => {
         selectedCategory,
         contact,
         issueTitle,
+        description,
+        imageData,
       });
       alert("Data sent successfully!");
+      setIsSubmitted(true);
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");
@@ -79,12 +106,12 @@ const RaiseTicket = () => {
         (project) => project.projectName === selectedProject.label
       );
       setFilteredModules(filtered.modules);
-      setSelectedModule(null); 
-      setSelectedCategory(null); 
+      setSelectedModule(null);
+      setSelectedCategory(null);
     } else {
       setFilteredModules([]);
-      setSelectedModule(null); 
-      setSelectedCategory(null); 
+      setSelectedModule(null);
+      setSelectedCategory(null);
     }
   }, [selectedProject, projects]);
 
@@ -97,14 +124,33 @@ const RaiseTicket = () => {
       setSelectedCategory(null);
     } else {
       setFilteredCategories([]);
-      setSelectedCategory(null); 
+      setSelectedCategory(null);
     }
   }, [selectedModule, filteredModules]);
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
-    console.log({ event, editor, data });
+    // console.log({ event, editor, data });
+    // const cleanData = data.replace(/<[^>]*>/g, "");
+    setDescription(data);
   }, 500);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageData(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleContactChange = (e) => {
+    const input = e.target.value;
+    // Check if input is a number and if it's length is less than or equal to 10
+    if (/^\d*$/.test(input) && input.length <= 10) {
+      setContact(input);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen font-[fangsong]">
@@ -135,7 +181,7 @@ const RaiseTicket = () => {
               </div>
               <div className="w-full sm:w-auto mb-4 sm:mb-0">
                 <label htmlFor="project" className="block mb-1">
-                  Project:
+                  Project<span className="text-red-500">*</span>:
                 </label>
                 <Select
                   value={selectedProject}
@@ -150,7 +196,7 @@ const RaiseTicket = () => {
               </div>
               <div className="w-full sm:w-auto mb-4 sm:mb-0">
                 <label htmlFor="module" className="block mb-1">
-                  Module:
+                  Module<span className="text-red-500">*</span>:
                 </label>
                 <Select
                   value={selectedModule}
@@ -165,7 +211,7 @@ const RaiseTicket = () => {
               </div>
               <div className="w-full sm:w-auto mb-4 sm:mb-0">
                 <label htmlFor="category" className="block mb-1">
-                  Category:
+                  Category<span className="text-red-500">*</span>:
                 </label>
                 <Select
                   value={selectedCategory}
@@ -180,20 +226,23 @@ const RaiseTicket = () => {
               </div>
               <div className="w-full px-1 mb-4 sm:mb-0">
                 <label htmlFor="contact" className="block mb-1">
-                  Contact:
+                  Contact<span className="text-red-500">*</span>:
                 </label>
                 <input
                   type="text"
                   id="contact"
                   value={contact}
-                  onChange={(e) => setContact(e.target.value)}
+                  onChange={handleContactChange}
                   placeholder="Enter Contact Number"
                   className="border-gray-300 border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:border-blue-500"
                 />
+                {contactError && (
+                  <p className="text-red-500 text-sm mt-1">{contactError}</p>
+                )}
               </div>
               <div className="w-full mb-4 px-1 sm:mb-0">
                 <label htmlFor="issueTitle" className="block mb-1">
-                  Issue Title:
+                  Issue Title<span className="text-red-500">*</span>:
                 </label>
                 <input
                   type="text"
@@ -206,15 +255,17 @@ const RaiseTicket = () => {
               </div>
               <div className="w-full mt-2 mb-1">
                 <label htmlFor="description" className="block mb-1">
-                  Description:
+                  Description<span className="text-red-500">*</span>:
                 </label>
                 <CKEditor
                   editor={ClassicEditor}
-                  data=""
+                  data={description}
                   onReady={(editor) => {
                     console.log("Editor is ready to use!", editor);
                   }}
+                  
                   onChange={debouncedOnChange}
+                  
                 />
               </div>
               <div className="w-full mt-1 mb-1">
@@ -225,6 +276,7 @@ const RaiseTicket = () => {
                   type="file"
                   id="uploadFile"
                   className="border-gray-300 border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:border-blue-500"
+                  onChange={handleImageChange}
                 />
               </div>
               <div className="flex justify-center mt-1">
