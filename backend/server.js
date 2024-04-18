@@ -46,3 +46,45 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+// const express = require('express');
+// const mysql = require('mysql');
+
+// const app = express();
+
+// // MySQL Connection Configuration
+// const db = mysql.createConnection({
+//   host: 'your_mysql_host',
+//   user: 'your_mysql_user',
+//   password: 'your_mysql_password',
+//   database: 'your_database_name'
+// });
+
+// // Connect to MySQL
+// db.connect((err) => {
+//   if (err) {
+//     console.error('Error connecting to MySQL:', err);
+//     return;
+//   }
+//   console.log('Connected to MySQL database');
+// });
+
+// // Close the MySQL connection when the Node.js process is terminated
+// process.on('SIGINT', () => {
+//   db.end((err) => {
+//     if (err) {
+//       console.error('Error closing MySQL connection:', err);
+//       process.exit(1);
+//     }
+//     console.log('MySQL connection closed');
+//     process.exit(0);
+//   });
+// });
+
+// // Start the Express server
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
