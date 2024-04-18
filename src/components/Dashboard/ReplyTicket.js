@@ -3,8 +3,10 @@ import axios from "axios";
 import close from "../../components/assets/close.gif";
 import downloadImg from "../../components/assets/downloadImg.gif";
 import userlogo from "../../components/assets/flaticon3.png";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { CKEditor } from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import _ from "lodash";
 import Select from "react-select";
 
@@ -72,6 +74,32 @@ const ReplyTicket = ({ issue, onClose }) => {
       alert(error.message);
     }
   };
+
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image"],
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "link",
+    "image",
+  ];
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
@@ -321,14 +349,20 @@ const ReplyTicket = ({ issue, onClose }) => {
                   >
                     Solution<span className="text-red-500">*</span>:
                   </label>
-                  <CKEditor
+                  {/* <CKEditor
                     editor={ClassicEditor}
                     data={description}
                     onReady={(editor) => {
                       console.log("Editor is ready to use!", editor);
                     }}
                     onChange={debouncedOnChange}
-                  />
+                  /> */}
+                  <ReactQuill
+                  value={description}
+                  onChange={setDescription}
+                  modules={modules}
+                  formats={formats}
+                />
                 </div>
                 <div className="mb-4 w-full">
                   <label
