@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { isLength } from "validator";
 import { useNavigate } from "react-router-dom";
-import users from "./user.json";
+// import users from "./user.json";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -18,17 +18,24 @@ const LoginForm = () => {
     const isValid = validateInput();
 
     if (isValid) {
-      const user = users.find(
-        (user) => user.username === username && user.password === password
-      );
+      try {
+        const response = await axios.post("http://localhost:5000/api/login", {
+          username,
+          password,
+        });
 
-      if (user) {
-        navigate("/dashboard");
-      } else {
-        setPasswordError("Invalid Credentials");
+        if (response.status === 200) {
+          navigate("/dashboard");
+        } else {
+          setPasswordError("Invalid Credentials");
+        }
+      } catch (error) {
+        console.error(error);
+        setPasswordError("Please enter valid credentials.");
       }
     }
   };
+
   const validateInput = () => {
     const usernameValue = username.trim();
     const passwordValue = password.trim();
