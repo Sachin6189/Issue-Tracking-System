@@ -17,28 +17,11 @@ const DashboardTable = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get("/Data/data.json");
+      const res = await axios.get("http://localhost:5000/tickets");
       const jsonData = await res.data;
-
-      const convertRaisedTime = (raisedTime) => {
-        const [date, time] = raisedTime.split(" ");
-        const [day, month, year] = date.split("-");
-        const [hours, minutes] = time.split(":");
-        const amPm = time.includes("PM") ? "PM" : "AM";
-
-        const hours12 =
-          amPm === "PM" && hours < 12 ? parseInt(hours, 10) + 12 : hours;
-
-        return `${year}-${month}-${day}T${hours12}:${minutes}:00`;
-      };
-
       const sortedData = jsonData
         .slice()
-        .sort(
-          (a, b) =>
-            new Date(convertRaisedTime(b.raisedTime)) -
-            new Date(convertRaisedTime(a.raisedTime))
-        );
+        .sort((a, b) => new Date(b.raised_time) - new Date(a.raised_time));
 
       setData(sortedData);
       setFilterData(sortedData);
@@ -51,16 +34,10 @@ const DashboardTable = () => {
     setFilterData(
       data.filter(
         (item) =>
-          item.selectedProject.value
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item.selectedModule.value
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item.selectedCategory.value
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item.issueTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.project_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.module_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.issue_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.contact.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
@@ -92,7 +69,7 @@ const DashboardTable = () => {
         <table className="w-full table-auto border-collapse border border-gray-300 ">
           <thead className="bg-gray-800 text-white">
             <tr>
-              <th className="px-4 py-2 text-left">Ticket No.</th>
+              <th className="px-4 py-2 text-left">Ticket ID</th>
               <th className="px-4 py-2 text-left">Project</th>
               <th className="px-4 py-2 text-left">Module</th>
               <th className="px-4 py-2 text-left">Category</th>
@@ -108,23 +85,27 @@ const DashboardTable = () => {
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
               >
+                <td className="px-4 py-2">{item.ticket_id}</td>
+                <td className="px-4 py-2">{item.project_name}</td>
+                <td className="px-4 py-2">{item.module_name}</td>
+                <td className="px-4 py-2">{item.category}</td>
                 <td
                   className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
                   onClick={() => handleIssueClick(item)}
                 >
-                  {item.id}
-                </td>
-                <td className="px-4 py-2">{item.selectedProject.value}</td>
-                <td className="px-4 py-2">{item.selectedModule.value}</td>
-                <td className="px-4 py-2">{item.selectedCategory.value}</td>
-                <td
-                  className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
-                  onClick={() => handleIssueClick(item)}
-                >
-                  {item.issueTitle}
+                  {item.issue_title}
                 </td>
                 <td className="px-4 py-2">{item.contact}</td>
-                <td className="px-4 py-2">{item.raisedTime}</td>
+                <td className="px-4 py-2">
+                  {new Date(item.raised_time).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </td>
                 <td className="px-4 py-2">Action Button</td>
               </tr>
             ))}

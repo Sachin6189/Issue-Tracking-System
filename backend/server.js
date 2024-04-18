@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 // const fs = require("fs");
 // const path = require("path");
-// const moment = require("moment-timezone");
+const moment = require("moment-timezone");
 const mysql = require("mysql");
 
 const app = express();
@@ -50,12 +50,16 @@ app.post("/submit", (req, res) => {
     imageData,
   } = req.body;
 
+  const raisedTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+  const randomId = Math.floor(Math.random() * 9000 + 1000);
+
   const sql =
-    "INSERT INTO tickets (employee_id, project_name, module_name, category, contact, issue_title, description, image_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO tickets (ticket_id, employee_id, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
     [
+      randomId,
       selectedEmployee.value,
       selectedProject.value,
       selectedModule.value,
@@ -64,12 +68,22 @@ app.post("/submit", (req, res) => {
       issueTitle,
       description,
       imageData,
+      raisedTime,
     ],
     (err, result) => {
       if (err) throw err;
       res.status(200).send("Data sent successfully!");
     }
   );
+});
+
+app.get("/tickets", (req, res) => {
+  const sql = "SELECT * FROM tickets";
+
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
 });
 
 // const pathToDataDirectory = "../public/Data";
