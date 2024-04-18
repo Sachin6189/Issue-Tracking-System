@@ -18,17 +18,24 @@ const LoginForm = () => {
     const isValid = validateInput();
 
     if (isValid) {
-      const user = users.find(
-        (user) => user.username === username && user.password === password
-      );
+      try {
+        const response = await axios.post("http://localhost:5000/api/login", {
+          username,
+          password,
+        });
 
-      if (user) {
-        navigate("/dashboard");
-      } else {
-        setPasswordError("Invalid Credentials");
+        if (response.status === 200) {
+          navigate("/dashboard");
+        } else {
+          setPasswordError("Invalid Credentials");
+        }
+      } catch (error) {
+        console.error(error);
+        setPasswordError("An error occurred. Please try again.");
       }
     }
   };
+
   const validateInput = () => {
     const usernameValue = username.trim();
     const passwordValue = password.trim();
