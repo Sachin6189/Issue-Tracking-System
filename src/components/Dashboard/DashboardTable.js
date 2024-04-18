@@ -85,7 +85,7 @@ const DashboardTable = () => {
           onChange={(e) => {
             setSearchTerm(e.target.value);
             debouncedFilterData(e.target.value);
-          }} 
+          }}
         />
       </div>
       <div className="overflow-x-auto rounded-lg shadow-xl">
@@ -108,7 +108,12 @@ const DashboardTable = () => {
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
               >
-                <td className="px-4 py-2 cursor-pointer text-blue-500 hover:underline "> {item.id}</td>
+                <td
+                  className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
+                  onClick={() => handleIssueClick(item)}
+                >
+                  {item.id}
+                </td>
                 <td className="px-4 py-2">{item.selectedProject.value}</td>
                 <td className="px-4 py-2">{item.selectedModule.value}</td>
                 <td className="px-4 py-2">{item.selectedCategory.value}</td>
