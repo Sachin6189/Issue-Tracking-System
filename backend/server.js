@@ -61,24 +61,21 @@ const db = mysql.createConnection({
 });
 
 db.connect((err)=>{
-  if(err){
-  console.log("connection to database failed"); 
-  return;
-  }else{
+  if(err) throw err;
   console.log('connected to mysql database')
-  }
+  
 });
 
-process.on('SIGINT', ()=>{
-  db.end((err)=>{
-    if(err){
-      console.err('Error closing mysql connection');
-      process.exit(1);
-    }
-    console.log('Mysql connection closed');
-    process.exit(0);
-  });
-});
+// process.on('SIGINT', ()=>{
+//   db.end((err)=>{
+//     if(err){
+//       console.err('Error closing mysql connection');
+//       process.exit(1);
+//     }
+//     console.log('Mysql connection closed');
+//     process.exit(0);
+//   });
+// });
 
 
 const PORT = process.env.PORT || 5000;
