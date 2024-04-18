@@ -9,3 +9,18 @@ CREATE TABLE users (
 To insert data in the above table
 
 INSERT INTO users (username, password) VALUES ('usename', 'password');
+
+To create ticket database
+
+CREATE TABLE `tickets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` varchar(255) NOT NULL,
+  `project_name` varchar(255) NOT NULL,
+  `module_name` varchar(255) NOT NULL,
+  `category` varchar(255) NOT NULL,
+  `contact` varchar(255) NOT NULL,
+  `issue_title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `image_data` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -1,9 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
-const moment = require("moment-timezone");
+// const fs = require("fs");
+// const path = require("path");
+// const moment = require("moment-timezone");
 const mysql = require("mysql");
 
 const app = express();
@@ -36,6 +36,40 @@ app.post("/api/login", (req, res) => {
       res.status(401).send("Invalid credentials.");
     }
   });
+});
+
+app.post("/submit", (req, res) => {
+  const {
+    selectedEmployee,
+    selectedProject,
+    selectedModule,
+    selectedCategory,
+    contact,
+    issueTitle,
+    description,
+    imageData,
+  } = req.body;
+
+  const sql =
+    "INSERT INTO tickets (employee_id, project_name, module_name, category, contact, issue_title, description, image_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      selectedEmployee.value,
+      selectedProject.value,
+      selectedModule.value,
+      selectedCategory.value,
+      contact,
+      issueTitle,
+      description,
+      imageData,
+    ],
+    (err, result) => {
+      if (err) throw err;
+      res.status(200).send("Data sent successfully!");
+    }
+  );
 });
 
 // const pathToDataDirectory = "../public/Data";
