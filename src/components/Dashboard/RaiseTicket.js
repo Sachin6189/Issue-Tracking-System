@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { CKEditor } from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -40,7 +42,7 @@ const RaiseTicket = () => {
       !description
     ) {
       alert("Please fill in all compulsory fields marked with *");
-      return; 
+      return;
     }
 
     if (!contactRegex.test(contact)) {
@@ -68,6 +70,31 @@ const RaiseTicket = () => {
       alert("Error sending data. Please try again later.");
     }
   };
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image"],
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "link",
+    "image",
+  ];
 
   const customStyles = {
     control: (provided) => ({
@@ -257,7 +284,7 @@ const RaiseTicket = () => {
                 <label htmlFor="description" className="block mb-1">
                   Description<span className="text-red-500">*</span>:
                 </label>
-                <CKEditor
+                {/* <CKEditor
                   editor={ClassicEditor}
                   data={description}
                   onReady={(editor) => {
@@ -266,6 +293,13 @@ const RaiseTicket = () => {
                   
                   onChange={debouncedOnChange}
                   
+                /> */}
+
+                <ReactQuill
+                  value={description}
+                  onChange={setDescription}
+                  modules={modules}
+                  formats={formats}
                 />
               </div>
               <div className="w-full mt-1 mb-1">
