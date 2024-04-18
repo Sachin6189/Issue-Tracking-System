@@ -76,7 +76,7 @@ const DashboardTable = () => {
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container max-w-full px-4 py-8">
       <div className="flex justify-end mb-4">
         <input
           type="text"
