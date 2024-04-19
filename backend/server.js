@@ -12,10 +12,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "database",
+  host: "172.27.129.80",
+  user: "share_user",
+  password: "share_user",
+  database: "mysql",
 });
 
 db.connect((err) => {
@@ -26,7 +26,7 @@ db.connect((err) => {
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+  const sql = "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
 
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
