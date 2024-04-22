@@ -55,7 +55,7 @@ app.post("/submit", (req, res) => {
   const randomId = Math.floor(Math.random() * 9000 + 1000);
 
   const sql =
-    "INSERT INTO tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -78,8 +78,8 @@ app.post("/submit", (req, res) => {
   );
 });
 
-app.get("/tickets", (req, res) => {
-  const sql = "SELECT * FROM tickets";
+app.get("/it_tickets", (req, res) => {
+  const sql = "SELECT * FROM it_tickets";
 
   db.query(sql, (err, result) => {
     if (err) throw err;

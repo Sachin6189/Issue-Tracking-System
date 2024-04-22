@@ -32,7 +32,7 @@ const Main = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get("http://localhost:5000/tickets");
+      const res = await axios.get("http://localhost:5000/it_tickets");
       const jsonData = await res.data;
       setTickets(jsonData);
     }
