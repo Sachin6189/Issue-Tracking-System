@@ -97,7 +97,7 @@ const RaiseTicket = () => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      width: "290px",
+      width: "50vh",
     }),
   };
 

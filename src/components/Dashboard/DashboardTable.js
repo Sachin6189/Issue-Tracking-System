@@ -28,7 +28,7 @@ const DashboardTable = () => {
     }
 
     fetchData();
-  }, []);
+  }, []); 
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
@@ -51,6 +51,75 @@ const DashboardTable = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 3;
+
+    if (totalPages <= maxVisiblePages + 2) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(
+          <button
+            key={i}
+            className={`${
+              currentPage === i
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
+            } font-bold py-1 px-3 rounded transition duration-300 ease-in-out`}
+            onClick={() => paginate(i)}
+          >
+            {i}
+          </button>
+        );
+      }
+    } else {
+      const firstPageNumbers = [];
+      const lastPageNumbers = [];
+
+      for (let i = 1; i <= maxVisiblePages; i++) {
+        firstPageNumbers.push(
+          <button
+            key={i}
+            className={`${
+              currentPage === i
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
+            } font-bold py-1 px-3 rounded transition duration-300 ease-in-out`}
+            onClick={() => paginate(i)}
+          >
+            {i}
+          </button>
+        );
+      }
+
+      const ellipsis = <span key="ellipsis">...</span>;
+
+      for (let i = totalPages - (maxVisiblePages - 1); i <= totalPages; i++) {
+        lastPageNumbers.push(
+          <button
+            key={i}
+            className={`${
+              currentPage === i
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
+            } font-bold py-1 px-3 rounded transition duration-300 ease-in-out`}
+            onClick={() => paginate(i)}
+          >
+            {i}
+          </button>
+        );
+      }
+
+      pageNumbers.push(...firstPageNumbers, ellipsis, ...lastPageNumbers);
+    }
+
+    return pageNumbers;
+  };
+
+  // Calculate range of entries being shown
+  const entriesStart = indexOfFirstItem + 1;
+  const entriesEnd = Math.min(indexOfLastItem, filterData.length);
+  const totalEntries = filterData.length;
 
   return (
     <div className="container max-w-full px-4 py-8">
@@ -118,32 +187,37 @@ const DashboardTable = () => {
         </table>
       </div>
 
-      <div className="flex justify-center items-center mt-8 space-x-4">
-        <button
-          className={`${
-            currentPage === 1
-              ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-700 text-white"
-          } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          aria-label="Previous Page"
-        >
-          Previous
-        </button>
-        <span className="text-gray-800 font-semibold">{`Page ${currentPage} of ${totalPages}`}</span>
-        <button
-          className={`${
-            currentPage === totalPages
-              ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-700 text-white"
-          } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          aria-label="Next Page"
-        >
-          Next
-        </button>
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          Showing {entriesStart} to {entriesEnd} of {totalEntries} entries
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            className={`${
+              currentPage === 1
+                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-700 text-white"
+            } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            aria-label="Previous Page"
+          >
+            Previous
+          </button>
+          {renderPageNumbers()}
+          <button
+            className={`${
+              currentPage === totalPages
+                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-700 text-white"
+            } font-bold py-2 px-4 rounded transition duration-300 ease-in-out`}
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            aria-label="Next Page"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {selectedIssue && (
