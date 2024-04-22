@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import axios from "axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 
 const RaiseTicket = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -109,14 +108,19 @@ const RaiseTicket = () => {
     navigate("/dashboard");
   };
 
-  const fetchEmployees = async () => {
-    const response = await axios.get("/Data/employee.json");
-    setEmployees(response.data.employeeDetails);
-  };
-
   useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/employees");
+        setEmployees(response.data.map(empId => ({ value: empId, label: empId })));
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
     fetchEmployees();
   }, []);
+
 
   const fetchProjects = async () => {
     const response = await axios.get("/Data/projects.json");
@@ -198,10 +202,7 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedEmployee}
                   onChange={setSelectedEmployee}
-                  options={employees.map((employee) => ({
-                    value: employee.empID,
-                    label: employee.empID,
-                  }))}
+                  options={employees}
                   placeholder="--Select an employee--"
                   styles={customStyles}
                 />
@@ -300,6 +301,7 @@ const RaiseTicket = () => {
                   onChange={setDescription}
                   modules={modules}
                   formats={formats}
+                  className="bg-white"
                 />
               </div>
               <div className="w-full mt-1 mb-1">

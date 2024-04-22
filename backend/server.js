@@ -122,6 +122,22 @@ app.post("/it_reply", (req, res) => {
   );
 });
 
+
+app.get("/api/employees", (req, res) => {
+  const sql = "SELECT emp_id FROM users";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const empIds = result.map(row => row.emp_id);
+    res.status(200).json(empIds);
+  });
+});
+
+
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");
 // const replyDataFilePath = path.join(pathToDataDirectory, "replyData.json");
