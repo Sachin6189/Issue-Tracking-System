@@ -25,3 +25,59 @@ CREATE TABLE `tickets` (
   `image_data` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Create it_projects table
+CREATE TABLE it_projects (
+    project_id INT AUTO_INCREMENT PRIMARY KEY,
+    project_name VARCHAR(255)
+);
+
+-- Create it_modules table
+CREATE TABLE it_modules (
+    module_id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT,
+    module_name VARCHAR(255),
+    FOREIGN KEY (project_id) REFERENCES it_projects(project_id)
+);
+
+-- Create it_category table
+CREATE TABLE it_category (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    module_id INT,
+    category_name VARCHAR(255),
+    FOREIGN KEY (module_id) REFERENCES it_modules(module_id)
+);
+
+-- Insert data from JSON into tables
+INSERT INTO it_projects (project_name) VALUES 
+('Project1'),
+('Project2'),
+('Project3'),
+('Project4'),
+('Project5');
+
+INSERT INTO it_modules (project_id, module_name) VALUES
+(1, 'Module1'),
+(1, 'Module2'),
+(1, 'Module3'),
+(2, 'Module4'),
+(2, 'Module5'),
+(3, 'Module6'),
+(3, 'Module7'),
+(4, 'Module8'),
+(4, 'Module9'),
+(5, 'Module10'),
+(5, 'Module11');
+
+INSERT INTO it_category (module_id, category_name) VALUES
+-- Project 1
+(1, 'Web dev'), (1, 'Database'), (1, 'Cloud'),
+(2, 'Testing'), (2, 'Security'), (2, 'User Interface (UI)'),
+(3, 'Analytics'), (3, 'Integration'), (3, 'Error Handling'),
+-- Project 2
+(4, 'Performance Optimization'), (4, 'Documentation'), (4, 'Deployment'),
+(5, 'Accessibility'), (5, 'Localization'), (5, 'Authentication'),
+-- Project 3
+(6, 'Version Control'), (6, 'Continuous Integration'), (6, 'Code Review'),
+(7, 'Data Structures'), (7, 'Algorithms'), (7, 'Machine Learning'),
