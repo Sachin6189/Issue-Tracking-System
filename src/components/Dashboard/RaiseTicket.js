@@ -8,7 +8,6 @@ import _ from "lodash";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-
 const RaiseTicket = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -112,7 +111,9 @@ const RaiseTicket = () => {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/employees");
-        setEmployees(response.data.map(empId => ({ value: empId, label: empId })));
+        setEmployees(
+          response.data.map((empId) => ({ value: empId, label: empId }))
+        );
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
@@ -121,48 +122,78 @@ const RaiseTicket = () => {
     fetchEmployees();
   }, []);
 
-
   const fetchProjects = async () => {
-    const response = await axios.get("/Data/projects.json");
-    setProjects(response.data.projects);
+    try {
+      const response = await axios.get("http://localhost:5000/api/projects");
+      setProjects(
+        response.data.map((projectName) => ({
+          value: projectName,
+          label: projectName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
   };
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
+  const fetchModules = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/modules", {
+        projectName: selectedProject.value,
+      });
+      setFilteredModules(
+        response.data.map((moduleName) => ({
+          value: moduleName,
+          label: moduleName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+    }
+  };
+
   useEffect(() => {
     if (selectedProject) {
-      const filtered = projects.find(
-        (project) => project.projectName === selectedProject.label
-      );
-      setFilteredModules(filtered.modules);
-      setSelectedModule(null);
-      setSelectedCategory(null);
+      fetchModules();
     } else {
       setFilteredModules([]);
       setSelectedModule(null);
       setSelectedCategory(null);
     }
-  }, [selectedProject, projects]);
+  }, [selectedProject]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/categories",
+        { moduleName: selectedModule.value }
+      );
+      setFilteredCategories(
+        response.data.map((categoryName) => ({
+          value: categoryName,
+          label: categoryName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   useEffect(() => {
     if (selectedModule) {
-      const filtered = filteredModules.find(
-        (module) => module.moduleName === selectedModule.label
-      );
-      setFilteredCategories(filtered.categories);
-      setSelectedCategory(null);
+      fetchCategories();
     } else {
       setFilteredCategories([]);
       setSelectedCategory(null);
     }
-  }, [selectedModule, filteredModules]);
+  }, [selectedModule]);
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
-    // console.log({ event, editor, data });
-    // const cleanData = data.replace(/<[^>]*>/g, "");
     setDescription(data);
   }, 500);
 
@@ -177,7 +208,6 @@ const RaiseTicket = () => {
 
   const handleContactChange = (e) => {
     const input = e.target.value;
-    // Check if input is a number and if it's length is less than or equal to 10
     if (/^\d*$/.test(input) && input.length <= 10) {
       setContact(input);
     }
@@ -207,51 +237,45 @@ const RaiseTicket = () => {
                   styles={customStyles}
                 />
               </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="project" className="block mb-1">
-                  Project<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedProject}
-                  onChange={setSelectedProject}
-                  options={projects.map((projects) => ({
-                    value: projects.projectName,
-                    label: projects.projectName,
-                  }))}
-                  placeholder="--Select a project--"
-                  styles={customStyles}
-                />
+              <div className="w-full sm:w-auto mb-4 sm:mb-0 flex">
+                <div className="mr-4">
+                  <label htmlFor="project" className="block mb-1">
+                    Project<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedProject}
+                    onChange={setSelectedProject}
+                    options={projects}
+                    placeholder="--Select a project--"
+                    styles={customStyles}
+                  />
+                </div>
+                <div className="mr-4">
+                  <label htmlFor="module" className="block mb-1">
+                    Module<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedModule}
+                    onChange={setSelectedModule}
+                    options={filteredModules}
+                    placeholder="--Select a module--"
+                    styles={customStyles}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="category" className="block mb-1">
+                    Category<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedCategory}
+                    onChange={setSelectedCategory}
+                    options={filteredCategories}
+                    placeholder="--Select a category--"
+                    styles={customStyles}
+                  />
+                </div>
               </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="module" className="block mb-1">
-                  Module<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedModule}
-                  onChange={setSelectedModule}
-                  options={filteredModules.map((modules) => ({
-                    value: modules.moduleName,
-                    label: modules.moduleName,
-                  }))}
-                  placeholder="--Select a module--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="category" className="block mb-1">
-                  Category<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={filteredCategories.map((categories) => ({
-                    value: categories,
-                    label: categories,
-                  }))}
-                  placeholder="--Select a category--"
-                  styles={customStyles}
-                />
-              </div>
+
               <div className="w-full px-1 mb-4 sm:mb-0">
                 <label htmlFor="contact" className="block mb-1">
                   Contact<span className="text-red-500">*</span>:
@@ -285,17 +309,6 @@ const RaiseTicket = () => {
                 <label htmlFor="description" className="block mb-1">
                   Description<span className="text-red-500">*</span>:
                 </label>
-                {/* <CKEditor
-                  editor={ClassicEditor}
-                  data={description}
-                  onReady={(editor) => {
-                    console.log("Editor is ready to use!", editor);
-                  }}
-                  
-                  onChange={debouncedOnChange}
-                  
-                /> */}
-
                 <ReactQuill
                   value={description}
                   onChange={setDescription}
@@ -326,7 +339,7 @@ const RaiseTicket = () => {
                   className="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold px-6 py-2 rounded"
                   onClick={handleCancel}
                 >
-                  Cancel  
+                  Cancel
                 </button>
               </div>
             </div>

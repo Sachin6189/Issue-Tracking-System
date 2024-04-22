@@ -1,349 +1,224 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import axios from "axios";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
-import { useNavigate } from "react-router-dom";
-import _ from "lodash";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+// const fs = require("fs");
+// const path = require("path");
+const moment = require("moment-timezone");
+const mysql = require("mysql");
 
-const RaiseTicket = () => {
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedModule, setSelectedModule] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [contact, setContact] = useState("");
-  const [issueTitle, setIssueTitle] = useState("");
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [employees, setEmployees] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [filteredModules, setFilteredModules] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
-  const [description, setDescription] = useState("");
-  const [imageData, setImageData] = useState("");
-  const [contactError, setContactError] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
+const db = mysql.createConnection({
+  host: "172.27.129.80",
+  user: "share_user",
+  password: "share_user",
+  database: "mysql",
+});
 
-  const handleSubmit = async () => {
-    const contactRegex = /^\d{10}$/;
-    if (
-      !selectedProject ||
-      !selectedModule ||
-      !selectedCategory ||
-      !contact ||
-      !issueTitle ||
-      !description
-    ) {
-      alert("Please fill in all compulsory fields marked with *");
-      return;
-    }
+db.connect((err) => {
+  if (err) throw err;
+  console.log("Connected to the database.");
+});
 
-    if (!contactRegex.test(contact)) {
-      setContactError("Contact number must be 10 digits");
-      return;
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const sql =
+    "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
+
+  db.query(sql, [username, password], (err, result) => {
+    if (err) throw err;
+    if (result.length > 0) {
+      res.status(200).send("Logged in successfully.");
     } else {
-      setContactError("");
+      res.status(401).send("Invalid credentials.");
     }
+  });
+});
 
-    try {
-      const response = await axios.post("http://localhost:5000/submit", {
-        selectedEmployee,
-        selectedProject,
-        selectedModule,
-        selectedCategory,
-        contact,
-        issueTitle,
-        description,
-        imageData,
-      });
-      alert("Data sent successfully!");
-      setIsSubmitted(true);
-    } catch (error) {
-      console.error("Error sending data:", error);
-      alert("Error sending data. Please try again later.");
-    }
-  };
+app.post("/submit", (req, res) => {
+  const {
+    selectedEmployee,
+    selectedProject,
+    selectedModule,
+    selectedCategory,
+    contact,
+    issueTitle,
+    description,
+    imageData,
+  } = req.body;
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "image"],
-      ["clean"],
+  const raisedTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+  const randomId = Math.floor(Math.random() * 9000 + 1000);
+
+  const sql =
+    "INSERT INTO it_tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      randomId,
+      selectedEmployee.value,
+      selectedProject.value,
+      selectedModule.value,
+      selectedCategory.value,
+      contact,
+      issueTitle,
+      description,
+      imageData,
+      raisedTime,
     ],
-    clipboard: {
-      matchVisual: false,
-    },
-  };
-
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "list",
-    "bullet",
-    "link",
-    "image",
-  ];
-
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      width: "290px",
-    }),
-  };
-
-  const navigate = useNavigate();
-
-  const handleCancel = () => {
-    navigate("/dashboard");
-  };
-
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/employees");
-        setEmployees(response.data.map(empId => ({ value: empId, label: empId })));
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-      }
-    };
-
-    fetchEmployees();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/projects");
-      setProjects(response.data.map(projectName => ({ value: projectName, label: projectName })));
-    } catch (error) {
-      console.error("Error fetching projects:", error);
+    (err, result) => {
+      if (err) throw err;
+      res.status(200).send("Data sent successfully!");
     }
-  };
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchModules = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/api/modules", { projectName: selectedProject.value });
-      setFilteredModules(response.data.map(moduleName => ({ value: moduleName, label: moduleName })));
-    } catch (error) {
-      console.error("Error fetching modules:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedProject) {
-      fetchModules();
-    } else {
-      setFilteredModules([]);
-      setSelectedModule(null);
-      setSelectedCategory(null);
-    }
-  }, [selectedProject]);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/api/categories", { moduleName: selectedModule.value });
-      setFilteredCategories(response.data.map(categoryName => ({ value: categoryName, label: categoryName })));
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedModule) {
-      fetchCategories();
-    } else {
-      setFilteredCategories([]);
-      setSelectedCategory(null);
-    }
-  }, [selectedModule]);
-
-  const debouncedOnChange = _.debounce((event, editor) => {
-    const data = editor.getData();
-    setDescription(data);
-  }, 500);
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImageData(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleContactChange = (e) => {
-    const input = e.target.value;
-    if (/^\d*$/.test(input) && input.length <= 10) {
-      setContact(input);
-    }
-  };
-
-  return (
-    <div className="flex flex-col min-h-screen font-[fangsong]">
-      <Navbar toggleSidebar={toggleSidebar} />
-      <div className="flex-grow flex">
-        {showSidebar && <Sidebar />}
-        <div className="flex-grow bg-gray-100 p-4 flex flex-col">
-          <div className="box flex-grow overflow-y-auto">
-            <h1 className="text-blue-500 font-semibold text-3xl text-center mb-4">
-              Create a New Ticket
-            </h1>
-
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="w-full sm:w-auto mb-4 p- sm:mb-0">
-                <label htmlFor="behalf" className="block mb-1">
-                  On Behalf:
-                </label>
-                <Select
-                  value={selectedEmployee}
-                  onChange={setSelectedEmployee}
-                  options={employees}
-                  placeholder="--Select an employee--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="project" className="block mb-1">
-                  Project<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedProject}
-                  onChange={setSelectedProject}
-                  options={projects.map((projects) => ({
-                    value: projects.projectName,
-                    label: projects.projectName,
-                  }))}
-                  placeholder="--Select a project--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="module" className="block mb-1">
-                  Module<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedModule}
-                  onChange={setSelectedModule}
-                  options={filteredModules}
-                  placeholder="--Select a module--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="category" className="block mb-1">
-                  Category<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={filteredCategories}
-                  placeholder="--Select a category--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full px-1 mb-4 sm:mb-0">
-                <label htmlFor="contact" className="block mb-1">
-                  Contact<span className="text-red-500">*</span>:
-                </label>
-                <input
-                  type="text"
-                  id="contact"
-                  value={contact}
-                  onChange={handleContactChange}
-                  placeholder="Enter Contact Number"
-                  className="border-gray-300 border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:border-blue-500"
-                />
-                {contactError && (
-                  <p className="text-red-500 text-sm mt-1">{contactError}</p>
-                )}
-              </div>
-              <div className="w-full mb-4 px-1 sm:mb-0">
-                <label htmlFor="issueTitle" className="block mb-1">
-                  Issue Title<span className="text-red-500">*</span>:
-                </label>
-                <input
-                  type="text"
-                  id="issueTitle"
-                  value={issueTitle}
-                  onChange={(e) => setIssueTitle(e.target.value)}
-                  placeholder="Enter Issue Title"
-                  className="border-gray-300 border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:border-blue-500"
-                />
-              </div>
-              <div className="w-full mt-2 mb-1">
-                <label htmlFor="description" className="block mb-1">
-                  Description<span className="text-red-500">*</span>:
-                </label>
-                <ReactQuill
-                  value={description}
-                  onChange={setDescription}
-                  modules={modules}
-                  formats={formats}
-                  className="bg-white"
-                />
-              </div>
-              <div className="w-full mt-1 mb-1">
-                <label htmlFor="uploadFile" className="block mb-1">
-                  Upload File:
-                </label>
-                <input
-                  type="file"
-                  id="uploadFile"
-                  className="border-gray-300 border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:border-blue-500"
-                  onChange={handleImageChange}
-                />
-              </div>
-              <div className="flex justify-center mt-1">
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold px-6 py-2 mr-4 rounded"
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </button>
-                <button
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold px-6 py-2 rounded"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="bottom-0 left-0 w-full bg-gray-200 border-t border-gray-300 flex justify-between items-center px-4 py-2">
-        <div className="text-sm">
-          <div className="font-[fangsong]">
-            Copyright &copy; 2024{" "}
-            <a
-              href="https://www.tatamotors.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 font-semibold cursor-pointer"
-            >
-              Tata Motors Limited.
-            </a>{" "}
-            All Rights Reserved.
-            <p className="text-xs">Use Chrome OR Firefox for a better view.</p>
-          </div>
-        </div>
-        <div className="text-sm font-[fangsong]">Version 2.0</div>
-      </div>
-    </div>
   );
-};
+});
 
-export default RaiseTicket;
+app.get("/it_tickets", (req, res) => {
+  const sql = "SELECT * FROM it_tickets";
+
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
+app.post("/it_reply", (req, res) => {
+  const {
+    ticketStatus,
+    ccList,
+    solutionTime,
+    department,
+    description,
+    imageData,
+    approvalRequired,
+    selectedOption,
+  } = req.body;
+
+
+  const sql =
+    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      ticketStatus,
+      ccList,
+      solutionTime,
+      department,
+      description,
+      imageData,
+      approvalRequired,
+      selectedOption,
+    ],
+    (err, result) => {
+      if (err) throw err;
+      res.status(200).send("Data sent successfully!");
+    }
+  );
+});
+
+
+app.get("/api/employees", (req, res) => {
+  const sql = "SELECT emp_id FROM users";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const empIds = result.map(row => row.emp_id);
+    res.status(200).json(empIds);
+  });
+});
+
+
+
+app.get("/api/projects", (req, res) => {
+  const sql = "SELECT project_name FROM it_projects";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const projectNames = result.map(row => row.project_name);
+    res.status(200).json(projectNames);
+  });
+});
+
+app.post("/api/modules", (req, res) => {
+  const { projectName } = req.body;
+  const sql = "SELECT module_name FROM it_modules WHERE project_id = (SELECT project_id FROM it_projects WHERE project_name = ?)";
+
+  db.query(sql, projectName, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const moduleNames = result.map(row => row.module_name);
+    res.status(200).json(moduleNames);
+  });
+});
+
+app.post("/api/categories", (req, res) => {
+  const { moduleName } = req.body;
+  const sql = "SELECT category_name FROM it_category WHERE module_id = (SELECT module_id FROM it_modules WHERE module_name = ?)";
+
+  db.query(sql, moduleName, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const categoryNames = result.map(row => row.category_name);
+    res.status(200).json(categoryNames);
+  });
+});
+
+
+
+// const pathToDataDirectory = "../public/Data";
+// const dataFilePath = path.join(pathToDataDirectory, "data.json");
+// const replyDataFilePath = path.join(pathToDataDirectory, "replyData.json");
+
+// app.post("/submit", (req, res) => {
+//   const data = req.body;
+//   data.id = Math.floor(Math.random() * 9000 + 1000);
+//   data.raisedTime = moment().tz("Asia/Kolkata").format("DD-MM-YYYY hh:mm A");
+
+//   if (!fs.existsSync(dataFilePath)) {
+//     fs.writeFileSync(dataFilePath, JSON.stringify([data], null, 2));
+//   } else {
+//     const jsonData = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+//     jsonData.push(data);
+//     fs.writeFileSync(dataFilePath, JSON.stringify(jsonData, null, 2));
+//     res.send("Data saved successfully.");
+//   }
+// });
+
+// app.post("/reply", (req, res) => {
+//   const replyData = req.body;
+
+//   if (!fs.existsSync(replyDataFilePath)) {
+//     fs.writeFileSync(replyDataFilePath, JSON.stringify([replyData], null, 2));
+//   } else {
+//     const jsonData = JSON.parse(fs.readFileSync(replyDataFilePath, "utf8"));
+//     jsonData.push(replyData);
+//     fs.writeFileSync(replyDataFilePath, JSON.stringify(jsonData, null, 2));
+//     res.send("Reply data saved successfully.");
+//   }
+// });
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
