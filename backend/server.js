@@ -54,6 +54,9 @@ app.post("/submit", (req, res) => {
   const raisedTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
   const randomId = Math.floor(Math.random() * 9000 + 1000);
 
+  
+  const onBehalfValue = selectedEmployee ? selectedEmployee.value : null;
+
   const sql =
     "INSERT INTO it_tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -61,7 +64,7 @@ app.post("/submit", (req, res) => {
     sql,
     [
       randomId,
-      selectedEmployee.value,
+      onBehalfValue,
       selectedProject.value,
       selectedModule.value,
       selectedCategory.value,
@@ -77,6 +80,7 @@ app.post("/submit", (req, res) => {
     }
   );
 });
+
 
 app.get("/it_tickets", (req, res) => {
   const sql = "SELECT * FROM it_tickets";

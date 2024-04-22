@@ -159,6 +159,9 @@ const RaiseTicket = () => {
   useEffect(() => {
     if (selectedProject) {
       fetchModules();
+      setFilteredModules([]);
+      setSelectedModule(null);
+      setSelectedCategory(null);
     } else {
       setFilteredModules([]);
       setSelectedModule(null);
@@ -186,6 +189,8 @@ const RaiseTicket = () => {
   useEffect(() => {
     if (selectedModule) {
       fetchCategories();
+      setFilteredCategories([]);
+      setSelectedCategory(null);
     } else {
       setFilteredCategories([]);
       setSelectedCategory(null);
