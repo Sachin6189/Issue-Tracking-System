@@ -85,7 +85,12 @@ const DashboardTable = () => {
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
               >
-                <td className="px-4 py-2">{item.ticket_id}</td>
+                <td
+                  className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
+                  onClick={() => handleIssueClick(item)}  
+                >
+                  {item.ticket_id}
+                </td>
                 <td className="px-4 py-2">{item.project_name}</td>
                 <td className="px-4 py-2">{item.module_name}</td>
                 <td className="px-4 py-2">{item.category}</td>

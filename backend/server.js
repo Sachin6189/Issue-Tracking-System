@@ -26,7 +26,8 @@ db.connect((err) => {
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
+  const sql =
+    "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
 
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
@@ -54,7 +55,7 @@ app.post("/submit", (req, res) => {
   const randomId = Math.floor(Math.random() * 9000 + 1000);
 
   const sql =
-    "INSERT INTO tickets (ticket_id, employee_id, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -84,6 +85,41 @@ app.get("/tickets", (req, res) => {
     if (err) throw err;
     res.send(result);
   });
+});
+
+app.post("/it_reply", (req, res) => {
+  const {
+    ticketStatus,
+    ccList,
+    solutionTime,
+    department,
+    description,
+    imageData,
+    approvalRequired,
+    selectedOption,
+  } = req.body;
+
+
+  const sql =
+    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      ticketStatus,
+      ccList,
+      solutionTime,
+      department,
+      description,
+      imageData,
+      approvalRequired,
+      selectedOption,
+    ],
+    (err, result) => {
+      if (err) throw err;
+      res.status(200).send("Data sent successfully!");
+    }
+  );
 });
 
 // const pathToDataDirectory = "../public/Data";
@@ -123,4 +159,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
