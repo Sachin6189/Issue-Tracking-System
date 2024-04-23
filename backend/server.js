@@ -24,12 +24,13 @@ db.connect((err) => {
 });
 
 app.post("/api/login", (req, res) => {
-  const { username, password } = req.body;
+  const {username, password } = req.body;
 
   const sql =
     "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
+    
 
-  db.query(sql, [username, password], (err, result) => {
+  db.query(sql, [ username, password], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
       res.status(200).send("Logged in successfully.");

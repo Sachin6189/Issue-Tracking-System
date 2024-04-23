@@ -4,13 +4,17 @@ import userLogo from "../assets/user.png";
 import Sidebar from "../assets/sidebar.png";
 import Logo from "../assets/logo.png";
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar}) => {
+  
+  const [showSignout, setShowSignout] = useState(false);
   const navigate = useNavigate();
 
-  const [showSignout, setShowSignout] = useState(false);
-  const username = "Sachin Kumar";
+  const username = sessionStorage.getItem("username");
+  
 
   const handleSignout = () => {
+    sessionStorage.removeItem("username");
+    
     navigate("/");
     setShowSignout(false);
   };

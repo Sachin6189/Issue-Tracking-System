@@ -25,6 +25,8 @@ const LoginForm = () => {
         });
 
         if (response.status === 200) {
+          sessionStorage.setItem("username", username);
+        
           navigate("/dashboard");
         } else {
           setPasswordError("Invalid Credentials");

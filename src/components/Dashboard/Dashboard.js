@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Navbar toggleSidebar={toggleSidebar} />
+      <Navbar toggleSidebar={toggleSidebar}  />
       {showSidebar && <Sidebar />}
       <Main />
       <DashboardTable />

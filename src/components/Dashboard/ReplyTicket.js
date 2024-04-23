@@ -143,7 +143,7 @@ const ReplyTicket = ({ issue, onClose }) => {
       <div className="bg-white rounded-lg shadow-xl overflow-hidden max-w-full w-full lg:w-3/4 md:w-5/6 border-2 border-gray-500">
         <div className="max-h-[99vh] overflow-y-auto">
           <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Ticket Number: {issue.id}</h2>
+            <h2 className="text-2xl font-bold">Ticket Number: {issue.ticket_id}</h2>
             <button
               className="px-2 py-1 rounded-full hover:bg-red-500 transition-colors duration-500 h-10 w-10"
               onClick={onClose}
@@ -206,7 +206,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                       className="px-2 py-2 h-10 w-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full"
                       onClick={handleDownload}
                     >
-                      <img src={downloadImg} alt="" />
+                      <img src={downloadImg} alt=""/>
                     </button>
                   )}
                 </div>
