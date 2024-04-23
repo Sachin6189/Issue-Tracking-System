@@ -29,8 +29,7 @@ const RaiseTicket = () => {
     setShowSidebar(!showSidebar);
   };
 
-  const empID = sessionStorage.getItem("emp_id")
-  
+  const empID = sessionStorage.getItem("emp_id");
 
   const handleSubmit = async () => {
     const contactRegex = /^\d{10}$/;
@@ -122,7 +121,7 @@ const RaiseTicket = () => {
         console.error("Error fetching employees:", error);
       }
     };
-
+    
     fetchEmployees();
   }, []);
 

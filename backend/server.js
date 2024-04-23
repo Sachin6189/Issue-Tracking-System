@@ -142,6 +142,7 @@ app.get("/api/employees", (req, res) => {
   });
 });
 
+
 app.get("/api/projects", (req, res) => {
   const sql = "SELECT project_name FROM it_projects";
 
