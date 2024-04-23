@@ -24,16 +24,18 @@ db.connect((err) => {
 });
 
 app.post("/api/login", (req, res) => {
-  const {username, password } = req.body;
+  const { username, password } = req.body;
 
   const sql =
     "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
-    
 
-  db.query(sql, [ username, password], (err, result) => {
+  db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
-      res.status(200).send("Logged in successfully.");
+      const { emp_id, emp_name } = result[0];
+      res
+        .status(200)
+        .json({ message: "Logged in successfully.", emp_id, emp_name });
     } else {
       res.status(401).send("Invalid credentials.");
     }
@@ -43,6 +45,7 @@ app.post("/api/login", (req, res) => {
 app.post("/submit", (req, res) => {
   const {
     selectedEmployee,
+    empID,
     selectedProject,
     selectedModule,
     selectedCategory,
@@ -55,17 +58,17 @@ app.post("/submit", (req, res) => {
   const raisedTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
   const randomId = Math.floor(Math.random() * 9000 + 1000);
 
-  
   const onBehalfValue = selectedEmployee ? selectedEmployee.value : null;
 
   const sql =
-    "INSERT INTO it_tickets (ticket_id, on_behalf, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_tickets (ticket_id, on_behalf,emp_id, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
     [
       randomId,
       onBehalfValue,
+      empID,
       selectedProject.value,
       selectedModule.value,
       selectedCategory.value,
@@ -81,7 +84,6 @@ app.post("/submit", (req, res) => {
     }
   );
 });
-
 
 app.get("/it_tickets", (req, res) => {
   const sql = "SELECT * FROM it_tickets";
@@ -103,7 +105,6 @@ app.post("/it_reply", (req, res) => {
     approvalRequired,
     selectedOption,
   } = req.body;
-
 
   const sql =
     "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -127,7 +128,6 @@ app.post("/it_reply", (req, res) => {
   );
 });
 
-
 app.get("/api/employees", (req, res) => {
   const sql = "SELECT emp_id FROM users";
 
@@ -137,12 +137,10 @@ app.get("/api/employees", (req, res) => {
       res.status(500).send("Internal server error");
       return;
     }
-    const empIds = result.map(row => row.emp_id);
+    const empIds = result.map((row) => row.emp_id);
     res.status(200).json(empIds);
   });
 });
-
-
 
 app.get("/api/projects", (req, res) => {
   const sql = "SELECT project_name FROM it_projects";
@@ -153,14 +151,15 @@ app.get("/api/projects", (req, res) => {
       res.status(500).send("Internal server error");
       return;
     }
-    const projectNames = result.map(row => row.project_name);
+    const projectNames = result.map((row) => row.project_name);
     res.status(200).json(projectNames);
   });
 });
 
 app.post("/api/modules", (req, res) => {
   const { projectName } = req.body;
-  const sql = "SELECT module_name FROM it_modules WHERE project_id = (SELECT project_id FROM it_projects WHERE project_name = ?)";
+  const sql =
+    "SELECT module_name FROM it_modules WHERE project_id = (SELECT project_id FROM it_projects WHERE project_name = ?)";
 
   db.query(sql, projectName, (err, result) => {
     if (err) {
@@ -168,14 +167,15 @@ app.post("/api/modules", (req, res) => {
       res.status(500).send("Internal server error");
       return;
     }
-    const moduleNames = result.map(row => row.module_name);
+    const moduleNames = result.map((row) => row.module_name);
     res.status(200).json(moduleNames);
   });
 });
 
 app.post("/api/categories", (req, res) => {
   const { moduleName } = req.body;
-  const sql = "SELECT category_name FROM it_category WHERE module_id = (SELECT module_id FROM it_modules WHERE module_name = ?)";
+  const sql =
+    "SELECT category_name FROM it_category WHERE module_id = (SELECT module_id FROM it_modules WHERE module_name = ?)";
 
   db.query(sql, moduleName, (err, result) => {
     if (err) {
@@ -183,12 +183,10 @@ app.post("/api/categories", (req, res) => {
       res.status(500).send("Internal server error");
       return;
     }
-    const categoryNames = result.map(row => row.category_name);
+    const categoryNames = result.map((row) => row.category_name);
     res.status(200).json(categoryNames);
   });
 });
-
-
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");

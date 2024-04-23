@@ -29,6 +29,9 @@ const RaiseTicket = () => {
     setShowSidebar(!showSidebar);
   };
 
+  const empID = sessionStorage.getItem("emp_id")
+  
+
   const handleSubmit = async () => {
     const contactRegex = /^\d{10}$/;
     if (
@@ -53,6 +56,7 @@ const RaiseTicket = () => {
     try {
       const response = await axios.post("http://localhost:5000/submit", {
         selectedEmployee,
+        empID,
         selectedProject,
         selectedModule,
         selectedCategory,

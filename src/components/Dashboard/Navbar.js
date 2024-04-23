@@ -14,6 +14,7 @@ const Navbar = ({ toggleSidebar}) => {
 
   const handleSignout = () => {
     sessionStorage.removeItem("username");
+    sessionStorage.removeItem("emp_id");
     
     navigate("/");
     setShowSignout(false);
