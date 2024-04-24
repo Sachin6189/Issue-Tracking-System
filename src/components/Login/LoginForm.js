@@ -9,6 +9,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [empId, setEmpId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -25,6 +26,11 @@ const LoginForm = () => {
         });
 
         if (response.status === 200) {
+          const { emp_id, emp_name } = response.data;
+          sessionStorage.setItem("username", emp_name);
+          sessionStorage.setItem("emp_id", emp_id);
+          setEmpId(emp_id);
+        
           navigate("/dashboard");
         } else {
           setPasswordError("Invalid Credentials");

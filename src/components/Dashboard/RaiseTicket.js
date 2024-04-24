@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import axios from "axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const RaiseTicket = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -26,10 +24,13 @@ const RaiseTicket = () => {
   const [imageData, setImageData] = useState("");
   const [contactError, setContactError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+
+  const empID = sessionStorage.getItem("emp_id");
 
   const handleSubmit = async () => {
     const contactRegex = /^\d{10}$/;
@@ -44,17 +45,18 @@ const RaiseTicket = () => {
       alert("Please fill in all compulsory fields marked with *");
       return;
     }
-
+  
     if (!contactRegex.test(contact)) {
       setContactError("Contact number must be 10 digits");
       return;
     } else {
       setContactError("");
     }
-
+  
     try {
       const response = await axios.post("http://localhost:5000/submit", {
         selectedEmployee,
+        empID,
         selectedProject,
         selectedModule,
         selectedCategory,
@@ -65,11 +67,24 @@ const RaiseTicket = () => {
       });
       alert("Data sent successfully!");
       setIsSubmitted(true);
+      
+      setSelectedEmployee(null);
+      setSelectedProject(null);
+      setSelectedModule(null);
+      setSelectedCategory(null);
+      setContact("");
+      setIssueTitle("");
+      setDescription("");
+      setImageData("");
+      setContactError("");
+      setFilteredModules([]);
+      setFilteredCategories([]);
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");
     }
   };
+  
 
   const modules = {
     toolbar: [
@@ -99,40 +114,69 @@ const RaiseTicket = () => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      width: "290px",
+      width: "50vh",
     }),
   };
 
-  const navigate = useNavigate();
+  
 
   const handleCancel = () => {
     navigate("/dashboard");
   };
 
-  const fetchEmployees = async () => {
-    const response = await axios.get("/Data/employee.json");
-    setEmployees(response.data.employeeDetails);
-  };
-
   useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/employees");
+        setEmployees(
+          response.data.map((empId) => ({ value: empId, label: empId }))
+        );
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+    
     fetchEmployees();
   }, []);
 
   const fetchProjects = async () => {
-    const response = await axios.get("/Data/projects.json");
-    setProjects(response.data.projects);
+    try {
+      const response = await axios.get("http://localhost:5000/api/projects");
+      setProjects(
+        response.data.map((projectName) => ({
+          value: projectName,
+          label: projectName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
   };
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
+  const fetchModules = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/modules", {
+        projectName: selectedProject.value,
+      });
+      setFilteredModules(
+        response.data.map((moduleName) => ({
+          value: moduleName,
+          label: moduleName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+    }
+  };
+
   useEffect(() => {
     if (selectedProject) {
-      const filtered = projects.find(
-        (project) => project.projectName === selectedProject.label
-      );
-      setFilteredModules(filtered.modules);
+      fetchModules();
+      setFilteredModules([]);
       setSelectedModule(null);
       setSelectedCategory(null);
     } else {
@@ -140,25 +184,38 @@ const RaiseTicket = () => {
       setSelectedModule(null);
       setSelectedCategory(null);
     }
-  }, [selectedProject, projects]);
+  }, [selectedProject]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/categories",
+        { moduleName: selectedModule.value }
+      );
+      setFilteredCategories(
+        response.data.map((categoryName) => ({
+          value: categoryName,
+          label: categoryName,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   useEffect(() => {
     if (selectedModule) {
-      const filtered = filteredModules.find(
-        (module) => module.moduleName === selectedModule.label
-      );
-      setFilteredCategories(filtered.categories);
+      fetchCategories();
+      setFilteredCategories([]);
       setSelectedCategory(null);
     } else {
       setFilteredCategories([]);
       setSelectedCategory(null);
     }
-  }, [selectedModule, filteredModules]);
+  }, [selectedModule]);
 
   const debouncedOnChange = _.debounce((event, editor) => {
     const data = editor.getData();
-    // console.log({ event, editor, data });
-    // const cleanData = data.replace(/<[^>]*>/g, "");
     setDescription(data);
   }, 500);
 
@@ -173,7 +230,6 @@ const RaiseTicket = () => {
 
   const handleContactChange = (e) => {
     const input = e.target.value;
-    // Check if input is a number and if it's length is less than or equal to 10
     if (/^\d*$/.test(input) && input.length <= 10) {
       setContact(input);
     }
@@ -198,59 +254,50 @@ const RaiseTicket = () => {
                 <Select
                   value={selectedEmployee}
                   onChange={setSelectedEmployee}
-                  options={employees.map((employee) => ({
-                    value: employee.empID,
-                    label: employee.empID,
-                  }))}
+                  options={employees}
                   placeholder="--Select an employee--"
                   styles={customStyles}
                 />
               </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="project" className="block mb-1">
-                  Project<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedProject}
-                  onChange={setSelectedProject}
-                  options={projects.map((projects) => ({
-                    value: projects.projectName,
-                    label: projects.projectName,
-                  }))}
-                  placeholder="--Select a project--"
-                  styles={customStyles}
-                />
+              <div className="w-full sm:w-auto mb-4 sm:mb-0 flex">
+                <div className="mr-4">
+                  <label htmlFor="project" className="block mb-1">
+                    Project<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedProject}
+                    onChange={setSelectedProject}
+                    options={projects}
+                    placeholder="--Select a project--"
+                    styles={customStyles}
+                  />
+                </div>
+                <div className="mr-4">
+                  <label htmlFor="module" className="block mb-1">
+                    Module<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedModule}
+                    onChange={setSelectedModule}
+                    options={filteredModules}
+                    placeholder="--Select a module--"
+                    styles={customStyles}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="category" className="block mb-1">
+                    Category<span className="text-red-500">*</span>:
+                  </label>
+                  <Select
+                    value={selectedCategory}
+                    onChange={setSelectedCategory}
+                    options={filteredCategories}
+                    placeholder="--Select a category--"
+                    styles={customStyles}
+                  />
+                </div>
               </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="module" className="block mb-1">
-                  Module<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedModule}
-                  onChange={setSelectedModule}
-                  options={filteredModules.map((modules) => ({
-                    value: modules.moduleName,
-                    label: modules.moduleName,
-                  }))}
-                  placeholder="--Select a module--"
-                  styles={customStyles}
-                />
-              </div>
-              <div className="w-full sm:w-auto mb-4 sm:mb-0">
-                <label htmlFor="category" className="block mb-1">
-                  Category<span className="text-red-500">*</span>:
-                </label>
-                <Select
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={filteredCategories.map((categories) => ({
-                    value: categories,
-                    label: categories,
-                  }))}
-                  placeholder="--Select a category--"
-                  styles={customStyles}
-                />
-              </div>
+
               <div className="w-full px-1 mb-4 sm:mb-0">
                 <label htmlFor="contact" className="block mb-1">
                   Contact<span className="text-red-500">*</span>:
@@ -284,22 +331,12 @@ const RaiseTicket = () => {
                 <label htmlFor="description" className="block mb-1">
                   Description<span className="text-red-500">*</span>:
                 </label>
-                {/* <CKEditor
-                  editor={ClassicEditor}
-                  data={description}
-                  onReady={(editor) => {
-                    console.log("Editor is ready to use!", editor);
-                  }}
-                  
-                  onChange={debouncedOnChange}
-                  
-                /> */}
-
                 <ReactQuill
                   value={description}
                   onChange={setDescription}
                   modules={modules}
                   formats={formats}
+                  className="bg-white"
                 />
               </div>
               <div className="w-full mt-1 mb-1">

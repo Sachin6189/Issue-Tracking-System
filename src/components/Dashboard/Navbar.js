@@ -1,16 +1,21 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
+import { Link, useNavigate } from "react-router-dom"; 
 import userLogo from "../assets/user.png";
 import Sidebar from "../assets/sidebar.png";
 import Logo from "../assets/logo.png";
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar}) => {
+  
+  const [showSignout, setShowSignout] = useState(false);
   const navigate = useNavigate();
 
-  const [showSignout, setShowSignout] = useState(false);
-  const username = "Sachin Kumar";
+  const username = sessionStorage.getItem("username");
+  
 
   const handleSignout = () => {
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("emp_id");
+    
     navigate("/");
     setShowSignout(false);
   };

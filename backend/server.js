@@ -12,10 +12,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "database",
+  host: "172.27.129.80",
+  user: "share_user",
+  password: "share_user",
+  database: "mysql",
 });
 
 db.connect((err) => {
@@ -26,12 +26,16 @@ db.connect((err) => {
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+  const sql =
+    "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
 
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
-      res.status(200).send("Logged in successfully.");
+      const { emp_id, emp_name } = result[0];
+      res
+        .status(200)
+        .json({ message: "Logged in successfully.", emp_id, emp_name });
     } else {
       res.status(401).send("Invalid credentials.");
     }
@@ -41,6 +45,7 @@ app.post("/api/login", (req, res) => {
 app.post("/submit", (req, res) => {
   const {
     selectedEmployee,
+    empID,
     selectedProject,
     selectedModule,
     selectedCategory,
@@ -53,14 +58,17 @@ app.post("/submit", (req, res) => {
   const raisedTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
   const randomId = Math.floor(Math.random() * 9000 + 1000);
 
+  const onBehalfValue = selectedEmployee ? selectedEmployee.value : null;
+
   const sql =
-    "INSERT INTO tickets (ticket_id, employee_id, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_tickets (ticket_id, on_behalf,emp_id, project_name, module_name, category, contact, issue_title, description, image_data, raised_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
     [
       randomId,
-      selectedEmployee.value,
+      onBehalfValue,
+      empID,
       selectedProject.value,
       selectedModule.value,
       selectedCategory.value,
@@ -77,12 +85,109 @@ app.post("/submit", (req, res) => {
   );
 });
 
-app.get("/tickets", (req, res) => {
-  const sql = "SELECT * FROM tickets";
+app.get("/it_tickets/:empId", (req, res) => {
+  const empId = req.params.empId;
+  const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
 
-  db.query(sql, (err, result) => {
+  db.query(sql, [empId], (err, result) => {
     if (err) throw err;
     res.send(result);
+  });
+});
+
+app.post("/it_reply", (req, res) => {
+  const {
+    ticketStatus,
+    ccList,
+    solutionTime,
+    department,
+    description,
+    imageData,
+    approvalRequired,
+    selectedOption,
+    empID,
+  } = req.body;
+
+  const sql =
+    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      ticketStatus,
+      ccList,
+      solutionTime,
+      department,
+      description,
+      imageData,
+      approvalRequired,
+      selectedOption,
+      empID,
+    ],
+    (err, result) => {
+      if (err) throw err;
+      res.status(200).send("Data sent successfully!");
+    }
+  );
+});
+
+app.get("/api/employees", (req, res) => {
+  const sql = "SELECT emp_id FROM users";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const empIds = result.map((row) => row.emp_id);
+    res.status(200).json(empIds);
+  });
+});
+
+app.get("/api/projects", (req, res) => {
+  const sql = "SELECT project_name FROM it_projects";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const projectNames = result.map((row) => row.project_name);
+    res.status(200).json(projectNames);
+  });
+});
+
+app.post("/api/modules", (req, res) => {
+  const { projectName } = req.body;
+  const sql =
+    "SELECT module_name FROM it_modules WHERE project_id = (SELECT project_id FROM it_projects WHERE project_name = ?)";
+
+  db.query(sql, projectName, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const moduleNames = result.map((row) => row.module_name);
+    res.status(200).json(moduleNames);
+  });
+});
+
+app.post("/api/categories", (req, res) => {
+  const { moduleName } = req.body;
+  const sql =
+    "SELECT category_name FROM it_category WHERE module_id = (SELECT module_id FROM it_modules WHERE module_name = ?)";
+
+  db.query(sql, moduleName, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Internal server error");
+      return;
+    }
+    const categoryNames = result.map((row) => row.category_name);
+    res.status(200).json(categoryNames);
   });
 });
 
@@ -123,4 +228,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

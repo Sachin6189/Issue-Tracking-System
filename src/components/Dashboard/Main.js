@@ -79,65 +79,65 @@ const Main = () => {
       <div className="flex pt-5">
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-red-400 rounded-lg font-semibold text-red-400 font-[fangsong] border-gr">
           <div className="w-1/4">
-            <img src={Tickets} />
+            <img src={Tickets} alt="" />
           </div>
           <div className="pl-10 ">
             <div>Ticket Raised</div>
             <div className="text-3xl">{NoOfTicketsRaised}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} />
+              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className=" flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-indigo-500 rounded-lg font-semibold text-indigo-500 font-[fangsong]">
           <div className="w-1/4">
-            <img src={TicketOpen} />
+            <img src={TicketOpen} alt="" />
           </div>
           <div className="pl-10">
             <div>Open Tickets</div>
             <div className="text-3xl">{OpenTickets}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} />
+              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-yellow-400 rounded-lg font-semibold text-yellow-500 font-[fangsong]">
           <div className="w-1/4 ">
-            <img src={Pending} />
+            <img src={Pending} alt="" />
           </div>
           <div className="pl-10">
             <div>Tickets Pending</div>
             <div className="text-3xl">{TicketsPending}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} />
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-purple-500 rounded-lg font-semibold text-purple-500 font-[fangsong] ">
           <div className="w-1/4">
-            <img src={Unclaimed} />
+            <img src={Unclaimed} alt=""/>
           </div>
           <div className="pl-9">
             <div>Unclaimed Tickets</div>
             <div className="text-3xl">{UnclaimedTickets}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} />
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-green-500 rounded-lg font-semibold text-green-500 font-[fangsong]">
           <div className="w-1/4">
-            <img src={Resolved} />
+            <img src={Resolved} alt=""/>
           </div>
           <div className="pl-10">
             <div>Tickets Resolved</div>
             <div className="text-3xl">{TicketsResolvedByMyself}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} />
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>
