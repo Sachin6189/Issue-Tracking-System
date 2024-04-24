@@ -24,6 +24,8 @@ const ReplyTicket = ({ issue, onClose }) => {
   const username = "Sachin Kumar";
   const EmpID = "928810";
 
+  const empID = sessionStorage.getItem("emp_id");
+
   useEffect(() => {
     if (issue.imageData) {
       setImageData(issue.imageData);
@@ -60,11 +62,20 @@ const ReplyTicket = ({ issue, onClose }) => {
         imageData,
         approvalRequired,
         selectedOption: selectedOption ? selectedOption.value : null,
+        empID,
       };
 
       const res = await axios.post("http://localhost:5000/it_reply", replyData);
       alert(res.data);
       setIsSubmitted(true);
+
+      setCcList("");
+      setSolutionTime("");
+      setApprovalRequired(false);
+      setSelectedOption(null);
+      setDescription("");
+      setImageData("");
+      setShowForm(false);
     } catch (error) {
       console.error("Error sending data:", error);
       alert(error.message);

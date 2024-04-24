@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
 import ReplyTicket from "./ReplyTicket";
+import teams from "../assets/teams.png";
+import select from "../assets/select.png"
 
 const DashboardTable = () => {
   const [data, setData] = useState([]);
@@ -17,18 +19,23 @@ const DashboardTable = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get("http://localhost:5000/it_tickets");
-      const jsonData = await res.data;
-      const sortedData = jsonData
-        .slice()
-        .sort((a, b) => new Date(b.raised_time) - new Date(a.raised_time));
-
-      setData(sortedData);
-      setFilterData(sortedData);
+      
+      const loggedInEmpId = sessionStorage.getItem("emp_id"); 
+  
+      if (loggedInEmpId) {
+        const res = await axios.get(`http://localhost:5000/it_tickets/${loggedInEmpId}`);
+        const Data = await res.data;
+        const sortedData = Data
+          .slice()
+          .sort((a, b) => new Date(b.raised_time) - new Date(a.raised_time));
+  
+        setData(sortedData);
+        setFilterData(sortedData);
+      }
     }
-
+  
     fetchData();
-  }, []); 
+  }, []);
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
@@ -156,7 +163,7 @@ const DashboardTable = () => {
               >
                 <td
                   className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
-                  onClick={() => handleIssueClick(item)}  
+                  onClick={() => handleIssueClick(item)}
                 >
                   {item.ticket_id}
                 </td>
@@ -171,16 +178,23 @@ const DashboardTable = () => {
                 </td>
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
-                  {new Date(item.raised_time).toLocaleString("en-US", {
+                  {new Date(item.raised_time).toLocaleString("en-IN", {
                     year: "numeric",
-                    month: "long",
+                    month: "numeric",
                     day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: true,
                   })}
                 </td>
-                <td className="px-4 py-2">Action Button</td>
+                <td className="flex gap-5 px-4 py-2">
+                  <div className=" h-8 w-8 hover:cursor-pointer">
+                    <img src={teams}/>
+                  </div>
+                  <div className=" h-8 w-8 hover:cursor-pointer">
+                    <img src={select}/>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

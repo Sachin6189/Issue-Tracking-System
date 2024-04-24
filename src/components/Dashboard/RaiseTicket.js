@@ -24,6 +24,7 @@ const RaiseTicket = () => {
   const [imageData, setImageData] = useState("");
   const [contactError, setContactError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -44,14 +45,14 @@ const RaiseTicket = () => {
       alert("Please fill in all compulsory fields marked with *");
       return;
     }
-
+  
     if (!contactRegex.test(contact)) {
       setContactError("Contact number must be 10 digits");
       return;
     } else {
       setContactError("");
     }
-
+  
     try {
       const response = await axios.post("http://localhost:5000/submit", {
         selectedEmployee,
@@ -66,11 +67,24 @@ const RaiseTicket = () => {
       });
       alert("Data sent successfully!");
       setIsSubmitted(true);
+      
+      setSelectedEmployee(null);
+      setSelectedProject(null);
+      setSelectedModule(null);
+      setSelectedCategory(null);
+      setContact("");
+      setIssueTitle("");
+      setDescription("");
+      setImageData("");
+      setContactError("");
+      setFilteredModules([]);
+      setFilteredCategories([]);
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");
     }
   };
+  
 
   const modules = {
     toolbar: [
@@ -104,7 +118,7 @@ const RaiseTicket = () => {
     }),
   };
 
-  const navigate = useNavigate();
+  
 
   const handleCancel = () => {
     navigate("/dashboard");

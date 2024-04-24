@@ -12,10 +12,11 @@ INSERT INTO users (username, password) VALUES ('usename', 'password');
 
 To create ticket database
 
-CREATE TABLE `tickets` (
+CREATE TABLE `it_ticket` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ticket_id` int(11) NOT NULL,
-  `employee_id` varchar(255) NOT NULL,
+  `on_behalf` varchar(255) NULL,
+  `emp_id`INT(12) NOT NULL,
   `project_name` varchar(255) NOT NULL,
   `module_name` varchar(255) NOT NULL,
   `category` varchar(255) NOT NULL,
@@ -23,6 +24,7 @@ CREATE TABLE `tickets` (
   `issue_title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `image_data` text,
+  `raised_time` TIMESTAMP, 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -85,10 +85,11 @@ app.post("/submit", (req, res) => {
   );
 });
 
-app.get("/it_tickets", (req, res) => {
-  const sql = "SELECT * FROM it_tickets";
+app.get("/it_tickets/:empId", (req, res) => {
+  const empId = req.params.empId;
+  const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
 
-  db.query(sql, (err, result) => {
+  db.query(sql, [empId], (err, result) => {
     if (err) throw err;
     res.send(result);
   });
@@ -104,10 +105,11 @@ app.post("/it_reply", (req, res) => {
     imageData,
     approvalRequired,
     selectedOption,
+    empID,
   } = req.body;
 
   const sql =
-    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -120,6 +122,7 @@ app.post("/it_reply", (req, res) => {
       imageData,
       approvalRequired,
       selectedOption,
+      empID,
     ],
     (err, result) => {
       if (err) throw err;
@@ -141,7 +144,6 @@ app.get("/api/employees", (req, res) => {
     res.status(200).json(empIds);
   });
 });
-
 
 app.get("/api/projects", (req, res) => {
   const sql = "SELECT project_name FROM it_projects";
