@@ -21,10 +21,11 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [employees, setEmployees] = useState([]);
 
+  const empID = sessionStorage.getItem("emp_id");
+  
   const username = "Sachin Kumar";
   const EmpID = "928810";
-
-  const empID = sessionStorage.getItem("emp_id");
+  const ticketId = issue.ticket_id;
 
   useEffect(() => {
     if (issue.imageData) {
@@ -53,7 +54,12 @@ const ReplyTicket = ({ issue, onClose }) => {
         throw new Error("solution is mandatory fields.");
       }
 
+      if (approvalRequired && !selectedOption) {
+        throw new Error("Please select an employee for approval.");
+      }
+
       const replyData = {
+        ticketId,
         ticketStatus,
         ccList,
         solutionTime,
@@ -126,6 +132,7 @@ const ReplyTicket = ({ issue, onClose }) => {
     if (!event.target.checked) {
       setSelectedOption(null);
     }
+    
   };
 
   const handleOptionChange = (option) => {

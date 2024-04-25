@@ -3,8 +3,8 @@ import axios from "axios";
 import _ from "lodash";
 import ReplyTicket from "./ReplyTicket";
 import teams from "../assets/teams.png";
-import select from "../assets/select.png"
-
+import select from "../assets/select.png";
+import TicketPopup from "./TicketPopup";
 const DashboardTable = () => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
@@ -12,28 +12,34 @@ const DashboardTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [selectedIssue, setSelectedIssue] = useState(null);
+  const [popupTicket, setPopupTicket] = useState(null);
 
   const handleIssueClick = (issue) => {
     setSelectedIssue(issue);
   };
 
+  const handleTakeActionClick = (ticket) => {
+    setPopupTicket(ticket);
+  };
+
   useEffect(() => {
     async function fetchData() {
-      
-      const loggedInEmpId = sessionStorage.getItem("emp_id"); 
-  
+      const loggedInEmpId = sessionStorage.getItem("emp_id");
+
       if (loggedInEmpId) {
-        const res = await axios.get(`http://localhost:5000/it_tickets/${loggedInEmpId}`);
+        const res = await axios.get(
+          `http://localhost:5000/it_tickets/${loggedInEmpId}`
+        );
         const Data = await res.data;
-        const sortedData = Data
-          .slice()
-          .sort((a, b) => new Date(b.raised_time) - new Date(a.raised_time));
-  
+        const sortedData = Data.slice().sort(
+          (a, b) => new Date(b.raised_time) - new Date(a.raised_time)
+        );
+
         setData(sortedData);
         setFilterData(sortedData);
       }
     }
-  
+
     fetchData();
   }, []);
 
@@ -153,6 +159,8 @@ const DashboardTable = () => {
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
               <th className="px-4 py-2 text-left">Action</th>
+              <th className="px-4 py-2 text-left">Approve/Rejected</th>{" "}
+              {/* New column */}
             </tr>
           </thead>
           <tbody>
@@ -188,11 +196,21 @@ const DashboardTable = () => {
                   })}
                 </td>
                 <td className="flex gap-5 px-4 py-2">
-                  <div className=" h-8 w-8 hover:cursor-pointer">
-                    <img src={teams}/>
+                  <div className="h-8 w-8 hover:cursor-pointer">
+                    <img src={teams} alt="Teams Icon" />
                   </div>
-                  <div className=" h-8 w-8 hover:cursor-pointer">
-                    <img src={select}/>
+                  <div className="h-8 w-8 hover:cursor-pointer">
+                    <img src={select} alt="Select Icon" />
+                  </div>
+                </td>
+                <td className="px-4 py-2">
+                  <div>
+                    <button
+                      className="px-2 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
+                      onClick={() => handleTakeActionClick(item)}
+                    >
+                      Take Action
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -233,6 +251,14 @@ const DashboardTable = () => {
           </button>
         </div>
       </div>
+
+      
+      {popupTicket && (
+        <TicketPopup
+          ticket={popupTicket}
+          onClose={() => setPopupTicket(null)}
+        />
+      )}
 
       {selectedIssue && (
         <ReplyTicket
