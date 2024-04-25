@@ -30,11 +30,14 @@ const Main = () => {
     navigate("/dashboard/raiseTicket");
   };
 
+  const empID = sessionStorage.getItem("emp_id")
+
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get("/Data/data.json");
+      const res = await axios.get(`http://localhost:5000/it_tickets/${empID}`);
       const jsonData = await res.data;
       setTickets(jsonData);
+      console.log(jsonData.length);
     }
     fetchData();
   }, []);

@@ -85,6 +85,16 @@ app.post("/submit", (req, res) => {
   );
 });
 
+app.get("/it_tickets", (req, res) => {
+  const empId = req.params.empId;
+  const sql = "SELECT * FROM it_tickets";
+
+  db.query(sql, [empId], (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";

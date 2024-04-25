@@ -190,8 +190,15 @@ const ReplyTicket = ({ issue, onClose }) => {
             <div>
               <div>
                 <div className="mt-2 bg-red-500 w-48 pl-2 rounded-lg">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    {issue.raised_time}
+                <h4 className="text-lg font-semibold text-white mb-2">
+                    {new Date(issue.raised_time).toLocaleString("en-IN", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
                   </h4>
                 </div>
                 <div className="flex gap-3 py-4 items-center">
