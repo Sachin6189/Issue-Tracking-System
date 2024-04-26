@@ -11,10 +11,17 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// const db = mysql.createConnection({
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "mysql",
+// });
+
 const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
   database: "mysql",
 });
 
@@ -32,10 +39,10 @@ app.post("/api/login", (req, res) => {
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
-      const { emp_id, emp_name } = result[0];
+      const { emp_id, emp_name, role } = result[0];
       res
         .status(200)
-        .json({ message: "Logged in successfully.", emp_id, emp_name });
+        .json({ message: "Logged in successfully.", emp_id, emp_name, role });
     } else {
       res.status(401).send("Invalid credentials.");
     }
@@ -199,6 +206,46 @@ app.post("/api/categories", (req, res) => {
     const categoryNames = result.map((row) => row.category_name);
     res.status(200).json(categoryNames);
   });
+});
+
+app.post("/approve_reject", (req, res) => {
+  const {
+    ticketId,
+    approverId,
+    projectName,
+    moduleName,
+    category,
+    issueTitle,
+    description,
+    approvalStatus,
+  } = req.body;
+
+  const currentTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+
+  const sql =
+    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status, created_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  db.query(
+    sql,
+    [
+      ticketId,
+      approverId,
+      projectName,
+      moduleName,
+      category,
+      issueTitle,
+      description,
+      approvalStatus,
+      currentTime,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).send("Internal server error");
+      }
+      res.status(200).send("Data sent successfully!");
+    }
+  );
 });
 
 // const pathToDataDirectory = "../public/Data";
