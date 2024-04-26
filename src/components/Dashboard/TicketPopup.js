@@ -9,38 +9,41 @@ const TicketPopup = ({ ticket, onClose }) => {
   const [approvalStatus, setApprovalStatus] = useState("");
   const approverId = sessionStorage.getItem("emp_id");
 
-  
+  //
 
-  const handleApprove = () =>{
-    setApprovalStatus("approve");
-    sendApprovalData();
-  }
+  const handleApprove = () => {
+    // We are giving two parametes coz while sending data we are calling thow parameters "remark" and "approval status" and coz we are parsing only one parameter in submit button function it will show the approval or reject in the remark state
+    sendApprovalData(remarks, "approve");
+  };
 
-  const handleReject = () =>{
-    setApprovalStatus("reject");
-    sendApprovalData();
-  }
+  const handleReject = () => {
+    sendApprovalData(remarks, "reject");
+  };
 
-  const sendApprovalData = async () => {
+  const sendApprovalData = async (remarks, approvalStatus) => {
     try {
-      const response = await axios.post("http://localhost:5000/approve_reject", {
-        ticketId: ticket.ticket_id,
-        approverId: approverId,
-        projectName: ticket.project_name,
-        moduleName: ticket.module_name,
-        category: ticket.category,
-        issueTitle: ticket.issue_title,
-        description: remarks,
-        approvalStatus: approvalStatus
-      });
+      const response = await axios.post(
+        "http://localhost:5000/approve_reject",
+        {
+          ticketId: ticket.ticket_id,
+          approverId: approverId,
+          projectName: ticket.project_name,
+          moduleName: ticket.module_name,
+          category: ticket.category,
+          issueTitle: ticket.issue_title,
+          description: remarks,
+          approvalStatus: approvalStatus,
+        }
+      );
       alert("Data sent successfully!");
-      setRemarks(null)
+      setRemarks(null);
+      setApprovalStatus(null);
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");
     }
   };
-  
+
   const modules = {
     toolbar: [
       [{ header: [1, 2, false] }],
@@ -71,7 +74,8 @@ const TicketPopup = ({ ticket, onClose }) => {
       <div className="bg-white p-8 rounded-lg relative w-full max-w-3xl h-auto max-h-screen overflow-y-auto">
         <div className="bg-gray-800 rounded-lg px-4 py-2 mb-4 flex justify-between items-center">
           <div className="text-white font-bold ">
-            Ticket ID: <span className="font-semibold"> {ticket.ticket_id}</span>
+            Ticket ID:{" "}
+            <span className="font-semibold"> {ticket.ticket_id}</span>
           </div>
           <button className="px-3 py-1 text-white rounded-md" onClick={onClose}>
             <div className="h-5 w-5">
@@ -81,21 +85,37 @@ const TicketPopup = ({ ticket, onClose }) => {
         </div>
         <div className="bg-gray-200 rounded-lg px-4 py-2 mb-4">
           <p className="font-bold mb-2">
-            Issue Title: <span className="text-gray-600 "> {ticket.issue_title}</span>
+            Issue Title:{" "}
+            <span className="text-gray-600 "> {ticket.issue_title}</span>
           </p>
           <p className="mb-2 font-bold">
-            Project: <span className="font-semibold text-gray-600"> {ticket.project_name}</span>
+            Project:{" "}
+            <span className="font-semibold text-gray-600">
+              {" "}
+              {ticket.project_name}
+            </span>
           </p>
           <p className="mb-2 font-bold">
-            Module: <span className="font-semibold text-gray-600"> {ticket.module_name}</span>
+            Module:{" "}
+            <span className="font-semibold text-gray-600">
+              {" "}
+              {ticket.module_name}
+            </span>
           </p>
           <p className="mb-2 font-bold">
-            Category: <span className="font-semibold text-gray-600"> {ticket.category}</span>
+            Category:{" "}
+            <span className="font-semibold text-gray-600">
+              {" "}
+              {ticket.category}
+            </span>
           </p>
         </div>
 
         <div className="mb-6 w-full">
-          <label htmlFor="remarks" className="block text-sm font-bold text-black mb-2">
+          <label
+            htmlFor="remarks"
+            className="block text-sm font-bold text-black mb-2"
+          >
             Remarks:
           </label>
           <ReactQuill
