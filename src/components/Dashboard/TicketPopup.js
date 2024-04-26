@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import close from "../assets/cross.png";
 
 const TicketPopup = ({ ticket, onClose }) => {
-  const [description, setDescription] = useState("");
+  const [remarks, setremarks] = useState("");
+
 
   const modules = {
     toolbar: [
@@ -30,48 +32,48 @@ const TicketPopup = ({ ticket, onClose }) => {
     "image",
   ];
 
-
-
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70">
       <div className="bg-white p-8 rounded-lg relative w-full max-w-3xl h-auto max-h-screen overflow-y-auto">
-        <div className="bg-gray-200 rounded-lg px-4 py-2 mb-4 flex justify-between items-center">
-          <div>
-            <span className="font-bold">Ticket ID:</span> {ticket.ticket_id}
+        <div className="bg-gray-800 rounded-lg px-4 py-2 mb-4 flex justify-between items-center">
+          <div className="text-white font-bold ">Ticket ID:
+            <span className="font-semibold"> {ticket.ticket_id}</span> 
           </div>
           <button
-            className="px-3 py-1 bg-gray-800 text-white rounded-md"
+            className="px-3 py-1 text-white rounded-md"
             onClick={onClose}
           >
-            X
+            <div className="h-5 w-5">
+              <img src={close} alt="" />
+            </div>
           </button>
         </div>
         <div className="bg-gray-200 rounded-lg px-4 py-2 mb-4">
           <p className="font-bold mb-2">
             Issue Title:
-            <span className="text-gray-600"> {ticket.issue_title}</span>
+            <span className="text-gray-600 "> {ticket.issue_title}</span>
           </p>
-          <p className="mb-2">
-            <span className="font-bold">Project:</span> {ticket.project_name}
+          <p className="mb-2 font-bold">Project:
+            <span className="font-semibold text-gray-600"> {ticket.project_name}</span>
           </p>
-          <p className="mb-2">
-            <span className="font-bold">Module:</span> {ticket.module_name}
+          <p className="mb-2 font-bold">Module:
+            <span className="font-semibold text-gray-600"> {ticket.module_name}</span> 
           </p>
-          <p className="mb-2">
-            <span className="font-bold">Category:</span> {ticket.category}
+          <p className="mb-2 font-bold">Category:
+            <span className="font-semibold text-gray-600"> {ticket.category}</span> 
           </p>
         </div>
 
         <div className="mb-6 w-full">
           <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="remarks"
+            className="block text-sm font-bold text-black mb-2"
           >
             Remarks:
           </label>
           <ReactQuill
-            value={description}
-            onChange={setDescription}
+            value={remarks}
+            onChange={setremarks}
             modules={modules}
             formats={formats}
             className="bg-white shadow-lg"

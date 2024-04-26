@@ -27,7 +27,7 @@ app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
   const sql =
-    "SELECT emp_id, emp_name, role FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
+    "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
 
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
@@ -200,6 +200,8 @@ app.post("/api/categories", (req, res) => {
     res.status(200).json(categoryNames);
   });
 });
+
+
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");
