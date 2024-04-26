@@ -201,7 +201,39 @@ app.post("/api/categories", (req, res) => {
   });
 });
 
+app.post("/api/it_approval", (req, res) => {
+  const { ticketId, project, module, category, remarks, approval, approverId } =
+    req.body;
 
+  const sql =
+    "INSERT INTO it_approval (ticket_id, project, module, category, remarks, approval, approver_id, approval_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  const approvalTime = moment()
+    .tz("Asia/Kolkata")
+    .format("YYYY-MM-DD HH:mm:ss");
+
+  db.query(
+    sql,
+    [
+      ticketId,
+      project,
+      module,
+      category,
+      remarks,
+      approval,
+      approverId,
+      approvalTime,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        res.status(500).send("Internal server error");
+        return;
+      }
+      res.status(200).send("data sent successfully!");
+    }
+  );
+});
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");
