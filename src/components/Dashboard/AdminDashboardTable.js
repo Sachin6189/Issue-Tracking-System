@@ -5,7 +5,8 @@ import ReplyTicket from "./ReplyTicket";
 import teams from "../assets/teams.png";
 import select from "../assets/select.png";
 import TicketPopup from "./TicketPopup";
-const DashboardTable = () => {
+
+const AdminDashboardTable = () => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,20 +25,14 @@ const DashboardTable = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const loggedInEmpId = sessionStorage.getItem("emp_id");
+      const res = await axios.get(`http://localhost:5000/it_tickets`);
+      const Data = await res.data;
+      const sortedData = Data.slice().sort(
+        (a, b) => new Date(b.raised_time) - new Date(a.raised_time)
+      );
 
-      if (loggedInEmpId) {
-        const res = await axios.get(
-          `http://localhost:5000/it_tickets/${loggedInEmpId}`
-        );
-        const Data = await res.data;
-        const sortedData = Data.slice().sort(
-          (a, b) => new Date(b.raised_time) - new Date(a.raised_time)
-        );
-
-        setData(sortedData);
-        setFilterData(sortedData);
-      }
+      setData(sortedData);
+      setFilterData(sortedData);
     }
 
     fetchData();
@@ -158,7 +153,7 @@ const DashboardTable = () => {
               <th className="px-4 py-2 text-left">Issue Title</th>
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
-          
+              <th className="px-4 py-2 text-left">Action</th>
               <th className="px-4 py-2 text-left">Approve/Rejected</th>{" "}
               {/* New column */}
             </tr>
@@ -195,7 +190,14 @@ const DashboardTable = () => {
                     hour12: true,
                   })}
                 </td>
-               
+                <td className="flex gap-5 px-4 py-2">
+                  <div className="h-8 w-8 hover:cursor-pointer">
+                    <img src={teams} alt="Teams Icon" />
+                  </div>
+                  <div className="h-8 w-8 hover:cursor-pointer">
+                    <img src={select} alt="Select Icon" />
+                  </div>
+                </td>
                 <td className="px-4 py-2">
                   <div>
                     <button
@@ -245,7 +247,6 @@ const DashboardTable = () => {
         </div>
       </div>
 
-      
       {popupTicket && (
         <TicketPopup
           ticket={popupTicket}
@@ -263,4 +264,4 @@ const DashboardTable = () => {
   );
 };
 
-export default DashboardTable;
+export default AdminDashboardTable;

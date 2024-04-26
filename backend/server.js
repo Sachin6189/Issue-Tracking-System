@@ -27,15 +27,15 @@ app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
   const sql =
-    "SELECT * FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
+    "SELECT emp_id, emp_name, role FROM users WHERE emp_name = ? AND password = ? AND status = 'active'";
 
   db.query(sql, [username, password], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
-      const { emp_id, emp_name } = result[0];
+      const { emp_id, emp_name, role } = result[0];
       res
         .status(200)
-        .json({ message: "Logged in successfully.", emp_id, emp_name });
+        .json({ message: "Logged in successfully.", emp_id, emp_name, role });
     } else {
       res.status(401).send("Invalid credentials.");
     }

@@ -15,22 +15,23 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const isValid = validateInput();
-
+  
     if (isValid) {
       try {
         const response = await axios.post("http://localhost:5000/api/login", {
           username,
           password,
         });
-
+  
         if (response.status === 200) {
-          const { emp_id, emp_name } = response.data;
+          const { emp_id, emp_name, role } = response.data;
           sessionStorage.setItem("username", emp_name);
           sessionStorage.setItem("emp_id", emp_id);
+          sessionStorage.setItem("role", role); 
           setEmpId(emp_id);
-        
+  
           navigate("/dashboard");
         } else {
           setPasswordError("Invalid Credentials");

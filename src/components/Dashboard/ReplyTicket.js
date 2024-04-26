@@ -398,6 +398,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                       className="bg-white"
                     />
                   </div>
+                
                   <div className="mb-4 w-full">
                     <label
                       htmlFor="uploadFile"
