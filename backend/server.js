@@ -11,10 +11,17 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// const db = mysql.createConnection({
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "mysql",
+// });
+
 const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
   database: "mysql",
 });
 
@@ -201,36 +208,42 @@ app.post("/api/categories", (req, res) => {
   });
 });
 
-app.post("/api/it_approval", (req, res) => {
-  const { ticketId, project, module, category, remarks, approval, approverId } =
-    req.body;
+app.post("/approve_reject", (req, res) => {
+  const {
+    ticketId,
+    approverId,
+    projectName,
+    moduleName,
+    category,
+    issueTitle,
+    description,
+    approvalStatus,
+  } = req.body;
+
+  const currentTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
 
   const sql =
-    "INSERT INTO it_approval (ticket_id, project, module, category, remarks, approval, approver_id, approval_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-  const approvalTime = moment()
-    .tz("Asia/Kolkata")
-    .format("YYYY-MM-DD HH:mm:ss");
+    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status, created_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
     [
       ticketId,
-      project,
-      module,
-      category,
-      remarks,
-      approval,
       approverId,
-      approvalTime,
+      projectName,
+      moduleName,
+      category,
+      issueTitle,
+      description,
+      approvalStatus,
+      currentTime,
     ],
     (err, result) => {
       if (err) {
         console.error("Error executing query:", err);
-        res.status(500).send("Internal server error");
-        return;
+        return res.status(500).send("Internal server error");
       }
-      res.status(200).send("data sent successfully!");
+      res.status(200).send("Data sent successfully!");
     }
   );
 });

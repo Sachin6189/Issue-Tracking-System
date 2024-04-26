@@ -9,35 +9,38 @@ const TicketPopup = ({ ticket, onClose }) => {
   const [approvalStatus, setApprovalStatus] = useState("");
   const approverId = sessionStorage.getItem("emp_id");
 
-  const handleApprove = () => {
+  
+
+  const handleApprove = () =>{
     setApprovalStatus("approve");
-    sendTicketData();
-  };
+    sendApprovalData();
+  }
 
-  const handleReject = () => {
+  const handleReject = () =>{
     setApprovalStatus("reject");
-    sendTicketData();
-  };
+    sendApprovalData();
+  }
 
-  const sendTicketData = async () => {
+  const sendApprovalData = async () => {
     try {
-      const data = {
+      const response = await axios.post("http://localhost:5000/approve_reject", {
         ticketId: ticket.ticket_id,
-        project: ticket.project_name,
-        module: ticket.module_name,
-        category: ticket.category,
-        remarks: remarks,
-        approval: approvalStatus,
         approverId: approverId,
-      };
-
-      const response = await axios.post("http://localhost:5000/it_approval", data);
-      alert(response.data);
+        projectName: ticket.project_name,
+        moduleName: ticket.module_name,
+        category: ticket.category,
+        issueTitle: ticket.issue_title,
+        description: remarks,
+        approvalStatus: approvalStatus
+      });
+      alert("Data sent successfully!");
+      setRemarks(null)
     } catch (error) {
       console.error("Error sending data:", error);
+      alert("Error sending data. Please try again later.");
     }
   };
-
+  
   const modules = {
     toolbar: [
       [{ header: [1, 2, false] }],
