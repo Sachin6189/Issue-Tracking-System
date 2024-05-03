@@ -222,10 +222,8 @@ app.post("/approve_reject", (req, res) => {
     approvalStatus,
   } = req.body;
 
-  const currentTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-
   const sql =
-    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status, created_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -238,7 +236,6 @@ app.post("/approve_reject", (req, res) => {
       issueTitle,
       description,
       approvalStatus,
-      currentTime,
     ],
     (err, result) => {
       if (err) {
@@ -246,7 +243,7 @@ app.post("/approve_reject", (req, res) => {
         return res.status(500).send("Internal server error");
       }
       res.status(200).send("Data sent successfully!");
-    }
+    } 
   );
 });
 
