@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const db = mysql.createConnection({
+  host: "172.27.129.80",
+  user: "share_user",
+  password: "share_user",
+  database: "testdb",
+});
+
 // const db = mysql.createConnection({
-//   host: "172.27.129.80",
-//   user: "share_user",
-//   password: "share_user",
+//   host: "127.0.0.1",
+//   user: "root",
+//   password: "",
 //   database: "mysql",
 // });
-
-const db = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "",
-  database: "mysql",
-});
 
 db.connect((err) => {
   if (err) throw err;
@@ -114,6 +114,7 @@ app.get("/it_tickets/:empId", (req, res) => {
 
 app.post("/it_reply", (req, res) => {
   const {
+    ticketId,
     ticketStatus,
     ccList,
     solutionTime,
@@ -126,11 +127,12 @@ app.post("/it_reply", (req, res) => {
   } = req.body;
 
   const sql =
-    "INSERT INTO it_reply (ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, selected_option, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
     [
+      ticketId,
       ticketStatus,
       ccList,
       solutionTime,
