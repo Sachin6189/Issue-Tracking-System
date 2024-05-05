@@ -68,17 +68,20 @@ const RaiseTicket = () => {
       alert("Data sent successfully!");
       setIsSubmitted(true);
       
-      setSelectedEmployee(null);
-      setSelectedProject(null);
-      setSelectedModule(null);
-      setSelectedCategory(null);
-      setContact("");
-      setIssueTitle("");
-      setDescription("");
-      setImageData("");
-      setContactError("");
-      setFilteredModules([]);
-      setFilteredCategories([]);
+      // setSelectedEmployee(null);
+      // setSelectedProject(null);
+      // setSelectedModule(null);
+      // setSelectedCategory(null);
+      // setContact("");
+      // setIssueTitle("");
+      // setDescription("");
+      // setImageData("");
+      // setContactError("");
+      // setFilteredModules([]);
+      // setFilteredCategories([]);
+      
+      // Navigate to dashboard
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");

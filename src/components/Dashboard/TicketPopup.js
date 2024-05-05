@@ -3,10 +3,12 @@ import ReactQuill from "react-quill";
 import axios from "axios";
 import "react-quill/dist/quill.snow.css";
 import close from "../assets/cross.png";
+import { useNavigate } from "react-router-dom";
 
 const TicketPopup = ({ ticket, onClose }) => {
   const [remarks, setRemarks] = useState("");
   const [approvalStatus, setApprovalStatus] = useState("");
+
   const approverId = sessionStorage.getItem("emp_id");
 
 
@@ -37,6 +39,7 @@ const TicketPopup = ({ ticket, onClose }) => {
       alert("Data sent successfully!");
       setRemarks(null);
       setApprovalStatus(null);
+      
     } catch (error) {
       console.error("Error sending data:", error);
       alert("Error sending data. Please try again later.");
