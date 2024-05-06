@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
-  database: "testdb",
-});
-
 // const db = mysql.createConnection({
-//   host: "127.0.0.1",
-//   user: "root",
-//   password: "",
-//   database: "mysql",
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "testdb",
 // });
+
+const db = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "mysql",
+});
 
 db.connect((err) => {
   if (err) throw err;
@@ -93,15 +93,33 @@ app.post("/submit", (req, res) => {
 });
 
 app.get("/it_tickets", (req, res) => {
-  const empId = req.params.empId;
-  const sql = "SELECT * FROM it_tickets";
+  const sql = `
+    SELECT 
+      it_tickets.ticket_id,
+      it_tickets.on_behalf,
+      it_tickets.emp_id,
+      users.emp_name AS raised_by,
+      it_tickets.project_name,
+      it_tickets.module_name,
+      it_tickets.category,
+      it_tickets.contact,
+      it_tickets.issue_title,
+      it_tickets.description,
+      it_tickets.image_data,
+      it_tickets.raised_time,
+      it_reply.ticket_status,
+      it_reply.support_person
+    FROM it_tickets
+    LEFT JOIN it_reply ON it_tickets.ticket_id = it_reply.ticket_id
+    LEFT JOIN users ON it_tickets.emp_id = users.emp_id
+    ORDER BY it_tickets.raised_time DESC;
+  `;
 
-  db.query(sql, [empId], (err, result) => {
+  db.query(sql, (err, result) => {
     if (err) throw err;
     res.send(result);
   });
 });
-
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
@@ -124,10 +142,11 @@ app.post("/it_reply", (req, res) => {
     approvalRequired,
     selectedOption,
     empID,
+    empName,
   } = req.body;
 
   const sql =
-    "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by, support_person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -136,12 +155,13 @@ app.post("/it_reply", (req, res) => {
       ticketStatus,
       ccList,
       solutionTime,
-      department,
+      department, 
       description,
       imageData,
       approvalRequired,
       selectedOption,
       empID,
+      empName,
     ],
     (err, result) => {
       if (err) throw err;
@@ -222,10 +242,8 @@ app.post("/approve_reject", (req, res) => {
     approvalStatus,
   } = req.body;
 
-  const currentTime = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-
   const sql =
-    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status, created_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -238,7 +256,6 @@ app.post("/approve_reject", (req, res) => {
       issueTitle,
       description,
       approvalStatus,
-      currentTime,
     ],
     (err, result) => {
       if (err) {
@@ -246,7 +263,7 @@ app.post("/approve_reject", (req, res) => {
         return res.status(500).send("Internal server error");
       }
       res.status(200).send("Data sent successfully!");
-    }
+    } 
   );
 });
 

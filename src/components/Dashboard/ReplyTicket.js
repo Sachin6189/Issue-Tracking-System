@@ -7,6 +7,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import _ from "lodash";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -20,11 +21,17 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [approvalRequired, setApprovalRequired] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const navigate = useNavigate(); // Use navigate hook to navigate to different routes
 
   const empID = sessionStorage.getItem("emp_id");
-  
-  const username = "Sachin Kumar";
-  const EmpID = "928810";
+  const empName = sessionStorage.getItem("username");
+
+  // const username = "Sachin Kumar";
+  // const EmpID = "928810";
+
+
+  const username = issue.raised_by;
+const EmpID = issue.emp_id;
   const ticketId = issue.ticket_id;
 
   useEffect(() => {
@@ -51,7 +58,7 @@ const ReplyTicket = ({ issue, onClose }) => {
   const handleSave = async () => {
     try {
       if (!description) {
-        throw new Error("solution is mandatory fields.");
+        throw new Error("Solution is a mandatory field.");
       }
 
       if (approvalRequired && !selectedOption) {
@@ -69,6 +76,7 @@ const ReplyTicket = ({ issue, onClose }) => {
         approvalRequired,
         selectedOption: selectedOption ? selectedOption.value : null,
         empID,
+        empName,
       };
 
       const res = await axios.post("http://localhost:5000/it_reply", replyData);
@@ -82,6 +90,7 @@ const ReplyTicket = ({ issue, onClose }) => {
       setDescription("");
       setImageData("");
       setShowForm(false);
+      navigate("/dashboard"); // Navigate to the dashboard after saving
     } catch (error) {
       console.error("Error sending data:", error);
       alert(error.message);
@@ -132,7 +141,6 @@ const ReplyTicket = ({ issue, onClose }) => {
     if (!event.target.checked) {
       setSelectedOption(null);
     }
-    
   };
 
   const handleOptionChange = (option) => {
@@ -153,7 +161,6 @@ const ReplyTicket = ({ issue, onClose }) => {
 
     fetchEmployees();
   }, []);
-
 
   const handleSolutionTimeChange = (e) => {
     const input = e.target.value;
@@ -197,7 +204,7 @@ const ReplyTicket = ({ issue, onClose }) => {
             <div>
               <div>
                 <div className="mt-2 bg-red-500 w-48 pl-2 rounded-lg">
-                <h4 className="text-lg font-semibold text-white mb-2">
+                  <h4 className="text-lg font-semibold text-white mb-2">
                     {new Date(issue.raised_time).toLocaleString("en-IN", {
                       year: "numeric",
                       month: "numeric",
@@ -398,7 +405,7 @@ const ReplyTicket = ({ issue, onClose }) => {
                       className="bg-white"
                     />
                   </div>
-                
+
                   <div className="mb-4 w-full">
                     <label
                       htmlFor="uploadFile"

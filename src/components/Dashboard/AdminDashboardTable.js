@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
 import ReplyTicket from "./ReplyTicket";
-import teams from "../assets/teams.png";
-import select from "../assets/select.png";
+// import teams from "../assets/teams.png";
+import claim from "../assets/select.png";
 import TicketPopup from "./TicketPopup";
 
 const AdminDashboardTable = () => {
@@ -151,11 +151,12 @@ const AdminDashboardTable = () => {
               <th className="px-4 py-2 text-left">Module</th>
               <th className="px-4 py-2 text-left">Category</th>
               <th className="px-4 py-2 text-left">Issue Title</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Support Person</th>
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
               <th className="px-4 py-2 text-left">Action</th>
-              <th className="px-4 py-2 text-left">Approve/Rejected</th>{" "}
-              {/* New column */}
+              <th className="px-4 py-2 text-left">Approve/Rejected</th>
             </tr>
           </thead>
           <tbody>
@@ -179,6 +180,8 @@ const AdminDashboardTable = () => {
                 >
                   {item.issue_title}
                 </td>
+                <td className="px-4 py-2">{item.ticket_status || "N/A"}</td>
+                <td className="px-4 py-2">{item.support_person || "N/A"}</td>
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
                   {new Date(item.raised_time).toLocaleString("en-IN", {
@@ -190,14 +193,14 @@ const AdminDashboardTable = () => {
                     hour12: true,
                   })}
                 </td>
-                <td className="flex gap-5 px-4 py-2">
+                {/* <td className="flex gap-5 px-4 py-2">
                   <div className="h-8 w-8 hover:cursor-pointer">
                     <img src={teams} alt="Teams Icon" />
                   </div>
                   <div className="h-8 w-8 hover:cursor-pointer">
-                    <img src={select} alt="Select Icon" />
+                    <img src={claim} alt="claim Icon" />
                   </div>
-                </td>
+                </td> */}
                 <td className="px-4 py-2">
                   <div>
                     <button
