@@ -15,10 +15,12 @@ const TicketPopup = ({ ticket, onClose }) => {
   const handleApprove = () => {
     // We are giving two parametes coz while sending data we are calling through parameters "remark" and "approval status" and coz we are parsing only one parameter in submit button function it will show the approval or reject in the remark state
     sendApprovalData(remarks, "approve");
+    onClose();
   };
 
   const handleReject = () => {
     sendApprovalData(remarks, "reject");
+    onClose();
   };
 
   const sendApprovalData = async (remarks, approvalStatus) => {

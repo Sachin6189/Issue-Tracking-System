@@ -9,6 +9,7 @@ import Unclaimed from "../../components/assets/unclaimed.gif";
 import Resolved from "../../components/assets/resolved.gif";
 import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
+import AdminDashboardTable from "./AdminDashboardTable";
 
 const AdminMain = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -17,6 +18,7 @@ const AdminMain = () => {
   const [openTicketsCount, setOpenTicketsCount] = useState(0);
   const [unclaimedTicketsCount, setUnclaimedTicketsCount] = useState(0);
   const [resolvedTicketsCount, setResolvedTicketsCount] = useState(0);
+  const [filterStatus, setFilterStatus] = useState("");
 
   const navigate = useNavigate();
 
@@ -38,22 +40,21 @@ const AdminMain = () => {
       const jsonData = await res.data;
       setTickets(jsonData);
 
-      // Filter open tickets and update the openTicketsCount
       const openTickets = jsonData.filter(
         (ticket) => ticket.ticket_status === "Open"
       );
       setOpenTicketsCount(openTickets.length);
 
-      // Filter resolved/closed tickets and update the resolvedTicketsCount
       const resolvedTickets = jsonData.filter(
         (ticket) => ticket.ticket_status === "Closed"
       );
       setResolvedTicketsCount(resolvedTickets.length);
 
-      // Filter unclaimed tickets and update the unclaimedTicketsCount
       const unclaimedTickets = jsonData.filter(
         (ticket) =>
-          ticket.ticket_status !== "Open" && ticket.ticket_status !== "Closed" && ticket.ticket_status !== "Rejected" && ticket.ticket_status !== "Re-Opened"
+          !["Open", "Closed", "Rejected", "Re-Opened"].includes(
+            ticket.ticket_status
+          )
       );
       setUnclaimedTicketsCount(unclaimedTickets.length);
     }
@@ -61,9 +62,7 @@ const AdminMain = () => {
   }, []);
 
   const NoOfTicketsRaised = tickets.length;
-
   const TicketsPending = 0;
-  const UnclaimedTickets = tickets.length;
 
   return (
     <div>
@@ -104,8 +103,11 @@ const AdminMain = () => {
           <div className="pl-10 ">
             <div>Ticket Raised</div>
             <div className="text-3xl">{NoOfTicketsRaised}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("")}
+            >
+              Show All Tickets <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -117,8 +119,11 @@ const AdminMain = () => {
           <div className="pl-10">
             <div>Open Tickets</div>
             <div className="text-3xl">{openTicketsCount}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Open")}
+            >
+              Show Open Tickets <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -131,7 +136,7 @@ const AdminMain = () => {
             <div>Tickets Pending</div>
             <div className="text-3xl">{TicketsPending}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
+              Show Pending Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -143,8 +148,11 @@ const AdminMain = () => {
           <div className="pl-9">
             <div>Unclaimed Tickets</div>
             <div className="text-3xl">{unclaimedTicketsCount}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Unclaimed")}
+            >
+              Show Unclaimed Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -156,12 +164,17 @@ const AdminMain = () => {
           <div className="pl-10">
             <div>Tickets Resolved</div>
             <div className="text-3xl">{resolvedTicketsCount}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Resolved")}
+            >
+              Show Resolved Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
-          </div>
+          </div>  
         </div>
       </div>
+      {/* Render the AdminDashboardTable component with the filtered status */}
+      <AdminDashboardTable tickets={tickets} filteredStatus={filterStatus} />
     </div>
   );
 };

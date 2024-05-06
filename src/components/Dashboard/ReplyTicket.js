@@ -21,7 +21,6 @@ const ReplyTicket = ({ issue, onClose }) => {
   const [approvalRequired, setApprovalRequired] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [employees, setEmployees] = useState([]);
-  const navigate = useNavigate(); // Use navigate hook to navigate to different routes
 
   const empID = sessionStorage.getItem("emp_id");
   const empName = sessionStorage.getItem("username");
@@ -29,9 +28,8 @@ const ReplyTicket = ({ issue, onClose }) => {
   // const username = "Sachin Kumar";
   // const EmpID = "928810";
 
-
   const username = issue.raised_by;
-const EmpID = issue.emp_id;
+  const EmpID = issue.emp_id;
   const ticketId = issue.ticket_id;
 
   useEffect(() => {
@@ -60,11 +58,11 @@ const EmpID = issue.emp_id;
       if (!description) {
         throw new Error("Solution is a mandatory field.");
       }
-
+  
       if (approvalRequired && !selectedOption) {
         throw new Error("Please select an employee for approval.");
       }
-
+  
       const replyData = {
         ticketId,
         ticketStatus,
@@ -78,11 +76,11 @@ const EmpID = issue.emp_id;
         empID,
         empName,
       };
-
+  
       const res = await axios.post("http://localhost:5000/it_reply", replyData);
       alert(res.data);
       setIsSubmitted(true);
-
+  
       setCcList("");
       setSolutionTime("");
       setApprovalRequired(false);
@@ -90,7 +88,9 @@ const EmpID = issue.emp_id;
       setDescription("");
       setImageData("");
       setShowForm(false);
-      navigate("/dashboard"); // Navigate to the dashboard after saving
+      
+      // Close the popup
+      onClose(); // Call onClose function to close the popup
     } catch (error) {
       console.error("Error sending data:", error);
       alert(error.message);
