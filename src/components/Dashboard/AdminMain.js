@@ -173,7 +173,7 @@ const AdminMain = () => {
           </div>  
         </div>
       </div>
-      {/* Render the AdminDashboardTable component with the filtered status */}
+      
       <AdminDashboardTable tickets={tickets} filteredStatus={filterStatus} />
     </div>
   );

@@ -172,6 +172,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
               <th className="px-4 py-2 text-left">Issue Title</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Support Person</th>
+              {/* <th className="px-4 py-2 text-left">Claim</th> */}
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
               <th className="px-4 py-2 text-left">Approve/Rejected</th>
@@ -202,8 +203,11 @@ const AdminDashboardTable = ({ filteredStatus }) => {
                   {item.ticket_status || "Unclaimed"}
                 </td>
                 <td className="px-4 py-2">
-                  {item.support_person || "Unclaimed"}
+                  {item.support_person || "N/A"}
                 </td>
+                {/* <td className="px-4 py-2"> 
+                  <img src={claim} alt="claim" className="h-6 w-6" />
+                </td> */}
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
                   {new Date(item.raised_time).toLocaleString("en-IN", {

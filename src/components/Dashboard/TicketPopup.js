@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import axios from "axios";
 import "react-quill/dist/quill.snow.css";
 import close from "../assets/cross.png";
-import { useNavigate } from "react-router-dom";
+
 
 const TicketPopup = ({ ticket, onClose }) => {
   const [remarks, setRemarks] = useState("");

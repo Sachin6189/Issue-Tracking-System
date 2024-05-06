@@ -26,7 +26,7 @@ const Dashboard = () => {
       {showSidebar && <Sidebar />}
       
       {isAdmin ? <AdminMain /> : <Main />}
-      {isAdmin ? <AdminDashboardTable /> : <DashboardTable />}
+      {/* {isAdmin ? <AdminDashboardTable /> : <DashboardTable />} */}
       <Footer />
     </div>
   );

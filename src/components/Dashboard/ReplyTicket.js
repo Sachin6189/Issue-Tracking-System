@@ -90,7 +90,7 @@ const ReplyTicket = ({ issue, onClose }) => {
       setShowForm(false);
       
       // Close the popup
-      onClose(); // Call onClose function to close the popup
+      onClose();
     } catch (error) {
       console.error("Error sending data:", error);
       alert(error.message);
