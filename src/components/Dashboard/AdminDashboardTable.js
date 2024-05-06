@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
 import ReplyTicket from "./ReplyTicket";
-// import teams from "../assets/teams.png";
 import claim from "../assets/select.png";
 import TicketPopup from "./TicketPopup";
 
-const AdminDashboardTable = () => {
+const AdminDashboardTable = ({ filteredStatus }) => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,11 +31,31 @@ const AdminDashboardTable = () => {
       );
 
       setData(sortedData);
-      setFilterData(sortedData);
+
+      if (filteredStatus === "Open") {
+        setFilterData(
+          sortedData.filter((ticket) => ticket.ticket_status === "Open")
+        );
+      } else if (filteredStatus === "Resolved") {
+        setFilterData(
+          sortedData.filter((ticket) => ticket.ticket_status === "Closed")
+        );
+      } else if (filteredStatus === "Unclaimed") {
+        setFilterData(
+          sortedData.filter(
+            (ticket) =>
+              !["Open", "Closed", "Rejected", "Re-Opened"].includes(
+                ticket.ticket_status
+              )
+          )
+        );
+      } else {
+        setFilterData(sortedData);
+      }
     }
 
     fetchData();
-  }, []);
+  }, [filteredStatus]);
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
@@ -153,9 +172,9 @@ const AdminDashboardTable = () => {
               <th className="px-4 py-2 text-left">Issue Title</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Support Person</th>
+              {/* <th className="px-4 py-2 text-left">Claim</th> */}
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
-              <th className="px-4 py-2 text-left">Action</th>
               <th className="px-4 py-2 text-left">Approve/Rejected</th>
             </tr>
           </thead>
@@ -180,8 +199,15 @@ const AdminDashboardTable = () => {
                 >
                   {item.issue_title}
                 </td>
-                <td className="px-4 py-2">{item.ticket_status || "N/A"}</td>
-                <td className="px-4 py-2">{item.support_person || "N/A"}</td>
+                <td className="px-4 py-2">
+                  {item.ticket_status || "Unclaimed"}
+                </td>
+                <td className="px-4 py-2">
+                  {item.support_person || "N/A"}
+                </td>
+                {/* <td className="px-4 py-2"> 
+                  <img src={claim} alt="claim" className="h-6 w-6" />
+                </td> */}
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
                   {new Date(item.raised_time).toLocaleString("en-IN", {
@@ -193,14 +219,6 @@ const AdminDashboardTable = () => {
                     hour12: true,
                   })}
                 </td>
-                {/* <td className="flex gap-5 px-4 py-2">
-                  <div className="h-8 w-8 hover:cursor-pointer">
-                    <img src={teams} alt="Teams Icon" />
-                  </div>
-                  <div className="h-8 w-8 hover:cursor-pointer">
-                    <img src={claim} alt="claim Icon" />
-                  </div>
-                </td> */}
                 <td className="px-4 py-2">
                   <div>
                     <button

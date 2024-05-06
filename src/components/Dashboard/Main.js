@@ -9,6 +9,7 @@ import Unclaimed from "../../components/assets/unclaimed.gif";
 import Resolved from "../../components/assets/resolved.gif";
 import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
+import DashboardTable from "./DashboardTable";
 
 
 const Main = () => {
@@ -145,6 +146,7 @@ const Main = () => {
           </div>
         </div>
       </div>
+      <DashboardTable />
     </div>
   );
 };
