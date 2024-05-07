@@ -133,7 +133,7 @@ const AdminMain = () => {
             <img src={Pending} alt="" />
           </div>
           <div className="pl-10">
-            <div>Tickets Pending</div>
+            <div>Tickets Pending On Me</div>
             <div className="text-3xl">{TicketsPending}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
               Show Pending Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt="" />

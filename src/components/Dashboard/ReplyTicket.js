@@ -25,8 +25,6 @@ const ReplyTicket = ({ issue, onClose }) => {
   const empID = sessionStorage.getItem("emp_id");
   const empName = sessionStorage.getItem("username");
 
-  // const username = "Sachin Kumar";
-  // const EmpID = "928810";
 
   const username = issue.raised_by;
   const EmpID = issue.emp_id;
