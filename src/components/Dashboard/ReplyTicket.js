@@ -8,7 +8,6 @@ import "react-quill/dist/quill.snow.css";
 import _ from "lodash";
 import Select from "react-select";
 
-
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -25,6 +24,8 @@ const ReplyTicket = ({ issue, onClose }) => {
   const empID = sessionStorage.getItem("emp_id");
   const empName = sessionStorage.getItem("username");
 
+  const { approvalData = {} } = issue;
+  const { approver_id, remarks, approval_status } = approvalData;
 
   const username = issue.raised_by;
   const EmpID = issue.emp_id;
@@ -51,7 +52,6 @@ const ReplyTicket = ({ issue, onClose }) => {
     setShowForm(false);
   };
 
-  
   const handleSave = async () => {
     try {
       if (!description) {
@@ -74,7 +74,7 @@ const ReplyTicket = ({ issue, onClose }) => {
         // selectedOption: selectedOption ? selectedOption.value : null,
         empID,
         empName,
-        approver_id: selectedOption ? selectedOption.value : null, 
+        approver_id: selectedOption ? selectedOption.value : null,
         approval_reqd: approvalRequired ? 1 : 0,
       };
 
@@ -254,7 +254,30 @@ const ReplyTicket = ({ issue, onClose }) => {
                 </div>
               </div>
             </div>
+            <div className="bg-gray-100 p-4 rounded-md shadow-md">
+              {approvalData && approval_status === "approve" && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Approval Details:
+                  </h3>
+                  <p className="text-gray-600 mb-2">
+                    Approver ID: {approver_id}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    Remarks:{" "}
+                    <div
+                      className="text-gray-600 mb-2"
+                      dangerouslySetInnerHTML={{ __html: remarks }}
+                    ></div>
+                  </p>
+                  <p className="text-gray-600">
+                    Approval Status: {approval_status}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
+
           <div>
             <div className="px-6 bg-gray-100 py-4 flex justify-end">
               <button

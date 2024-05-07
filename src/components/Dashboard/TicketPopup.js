@@ -34,7 +34,7 @@ const TicketPopup = ({ ticket, onClose }) => {
           moduleName: ticket.module_name,
           category: ticket.category,
           issueTitle: ticket.issue_title,
-          description: remarks,
+          remarks,
           approvalStatus: approvalStatus,
         }
       );

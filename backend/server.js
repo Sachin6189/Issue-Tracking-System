@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
-  database: "testdb",
-});
-
 // const db = mysql.createConnection({
-//   host: "127.0.0.1",
-//   user: "root",
-//   password: "",
-//   database: "test",
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "testdb",
 // });
+
+const db = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "test",
+});
 
 db.connect((err) => {
   if (err) throw err;
@@ -239,12 +239,12 @@ app.post("/approve_reject", (req, res) => {
     moduleName,
     category,
     issueTitle,
-    description,
+    remarks,
     approvalStatus,
   } = req.body;
 
   const sql =
-    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, description, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, remarks, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   db.query(
     sql,
@@ -255,7 +255,7 @@ app.post("/approve_reject", (req, res) => {
       moduleName,
       category,
       issueTitle,
-      description,
+      remarks,
       approvalStatus,
     ],
     (err, result) => {
@@ -268,6 +268,15 @@ app.post("/approve_reject", (req, res) => {
   );
 });
 
+app.get('/api/approval/:ticketId', (req, res) => {
+  const ticketId = req.params.ticketId;
+  const sql = 'SELECT * FROM it_approval WHERE ticket_id = ?';
+
+  db.query(sql, [ticketId], (err, result) => {
+    if (err) throw err;
+    res.send(result[0] || {}); // Send the first result if available, otherwise an empty object
+  });
+});
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");

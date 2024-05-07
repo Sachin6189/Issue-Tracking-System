@@ -16,8 +16,26 @@ const AdminDashboardTable = ({ filteredStatus }) => {
 
   const loggedInUserId = sessionStorage.getItem("emp_id");
 
-  const handleIssueClick = (issue) => {
-    setSelectedIssue(issue);
+  const handleIssueClick = async (issue) => {
+    try {
+      // Fetch approval data only if the approval_status is 'Approved'
+      if (issue.approval_reqd) {
+        const res = await axios.get(`http://localhost:5000/api/approval/${issue.ticket_id}`);
+        const approvalData = res.data;
+  
+        // Check if the approval_status is 'Approved'
+        if (approvalData.approval_status === 'approve') {
+          setSelectedIssue({ ...issue, approvalData });
+        } else {
+          setSelectedIssue(issue);
+        }
+      } else {
+        setSelectedIssue(issue);
+      }
+    } catch (error) {
+      console.error('Error fetching approval data:', error);
+      setSelectedIssue(issue);
+    }
   };
 
   const handleTakeActionClick = (ticket) => {
