@@ -3,8 +3,8 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import Main from "./Main";
 import Footer from "./Footer";
-import DashboardTable from "./DashboardTable";
-import AdminDashboardTable from "./AdminDashboardTable";
+// import DashboardTable from "./DashboardTable";
+// import AdminDashboardTable from "./AdminDashboardTable";
 import AdminMain from "./AdminMain";
 
 const Dashboard = () => {
