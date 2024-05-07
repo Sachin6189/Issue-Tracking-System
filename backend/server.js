@@ -22,7 +22,7 @@ const db = mysql.createConnection({
 //   host: "127.0.0.1",
 //   user: "root",
 //   password: "",
-//   database: "mysql",
+//   database: "test",
 // });
 
 db.connect((err) => {
@@ -94,26 +94,27 @@ app.post("/submit", (req, res) => {
 
 app.get("/it_tickets", (req, res) => {
   const sql = `
-    SELECT 
-      it_tickets.ticket_id,
-      it_tickets.on_behalf,
-      it_tickets.emp_id,
-      users.emp_name AS raised_by,
-      it_tickets.project_name,
-      it_tickets.module_name,
-      it_tickets.category,
-      it_tickets.contact,
-      it_tickets.issue_title,
-      it_tickets.description,
-      it_tickets.image_data,
-      it_tickets.raised_time,
-      it_reply.ticket_status,
-      it_reply.support_person
-    FROM it_tickets
-    LEFT JOIN it_reply ON it_tickets.ticket_id = it_reply.ticket_id
-    LEFT JOIN users ON it_tickets.emp_id = users.emp_id
-    ORDER BY it_tickets.raised_time DESC;
-  `;
+  SELECT 
+  it_tickets.ticket_id,
+  it_tickets.on_behalf,
+  it_tickets.emp_id,
+  users.emp_name AS raised_by,
+  it_tickets.project_name,
+  it_tickets.module_name,
+  it_tickets.category,
+  it_tickets.contact,
+  it_tickets.issue_title,
+  it_tickets.description,
+  it_tickets.image_data,
+  it_tickets.raised_time,
+  it_reply.ticket_status,
+  it_reply.support_person,
+  it_reply.approval_reqd,
+  it_reply.approver_id
+  FROM it_tickets
+  LEFT JOIN it_reply ON it_tickets.ticket_id = it_reply.ticket_id
+  LEFT JOIN users ON it_tickets.emp_id = users.emp_id
+  ORDER BY it_tickets.raised_time DESC;`;
 
   db.query(sql, (err, result) => {
     if (err) throw err;
@@ -139,8 +140,8 @@ app.post("/it_reply", (req, res) => {
     department,
     description,
     imageData,
-    approvalRequired,
-    selectedOption,
+    approval_reqd,
+    approver_id,
     empID,
     empName,
   } = req.body;
@@ -155,11 +156,11 @@ app.post("/it_reply", (req, res) => {
       ticketStatus,
       ccList,
       solutionTime,
-      department, 
+      department,
       description,
       imageData,
-      approvalRequired,
-      selectedOption,
+      approval_reqd,
+      approver_id,
       empID,
       empName,
     ],
@@ -263,7 +264,7 @@ app.post("/approve_reject", (req, res) => {
         return res.status(500).send("Internal server error");
       }
       res.status(200).send("Data sent successfully!");
-    } 
+    }
   );
 });
 

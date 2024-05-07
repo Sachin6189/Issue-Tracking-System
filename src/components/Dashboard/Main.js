@@ -11,7 +11,6 @@ import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
 import DashboardTable from "./DashboardTable";
 
-
 const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -31,7 +30,7 @@ const Main = () => {
     navigate("/dashboard/raiseTicket");
   };
 
-  const empID = sessionStorage.getItem("emp_id")
+  const empID = sessionStorage.getItem("emp_id");
 
   useEffect(() => {
     async function fetchData() {
@@ -115,33 +114,33 @@ const Main = () => {
             <div>Tickets Pending</div>
             <div className="text-3xl">{TicketsPending}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-purple-500 rounded-lg font-semibold text-purple-500 font-[fangsong] ">
           <div className="w-1/4">
-            <img src={Unclaimed} alt=""/>
+            <img src={Unclaimed} alt="" />
           </div>
           <div className="pl-9">
             <div>Unclaimed Tickets</div>
             <div className="text-3xl">{UnclaimedTickets}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-green-500 rounded-lg font-semibold text-green-500 font-[fangsong]">
           <div className="w-1/4">
-            <img src={Resolved} alt=""/>
+            <img src={Resolved} alt="" />
           </div>
           <div className="pl-10">
             <div>Tickets Resolved</div>
             <div className="text-3xl">{TicketsResolvedByMyself}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>

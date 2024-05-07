@@ -12,14 +12,16 @@ const AdminDashboardTable = ({ filteredStatus }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [selectedIssue, setSelectedIssue] = useState(null);
-  const [popupTicket, setPopupTicket] = useState(null);
+  const [popupTicket, setTicketPopup] = useState(null);
+
+  const loggedInUserId = sessionStorage.getItem("emp_id");
 
   const handleIssueClick = (issue) => {
     setSelectedIssue(issue);
   };
 
   const handleTakeActionClick = (ticket) => {
-    setPopupTicket(ticket);
+    setTicketPopup(ticket);
   };
 
   useEffect(() => {
@@ -202,9 +204,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
                 <td className="px-4 py-2">
                   {item.ticket_status || "Unclaimed"}
                 </td>
-                <td className="px-4 py-2">
-                  {item.support_person || "N/A"}
-                </td>
+                <td className="px-4 py-2">{item.support_person || "N/A"}</td>
                 {/* <td className="px-4 py-2"> 
                   <img src={claim} alt="claim" className="h-6 w-6" />
                 </td> */}
@@ -220,14 +220,16 @@ const AdminDashboardTable = ({ filteredStatus }) => {
                   })}
                 </td>
                 <td className="px-4 py-2">
-                  <div>
+                  {item.approval_reqd && item.approver_id === loggedInUserId ? (
                     <button
                       className="px-2 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
                       onClick={() => handleTakeActionClick(item)}
                     >
                       Take Action
                     </button>
-                  </div>
+                  ) : (
+                    "-"
+                  )}
                 </td>
               </tr>
             ))}
@@ -271,7 +273,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
       {popupTicket && (
         <TicketPopup
           ticket={popupTicket}
-          onClose={() => setPopupTicket(null)}
+          onClose={() => setTicketPopup(null)}
         />
       )}
 
