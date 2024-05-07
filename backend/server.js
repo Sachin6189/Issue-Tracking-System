@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
-  database: "testdb",
-});
-
 // const db = mysql.createConnection({
-//   host: "127.0.0.1",
-//   user: "root",
-//   password: "",
-//   database: "mysql",
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "testdb",
 // });
+
+const db = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "test",
+});
 
 db.connect((err) => {
   if (err) throw err;
@@ -139,11 +139,13 @@ app.post("/it_reply", (req, res) => {
     department,
     description,
     imageData,
-    approvalRequired,
-    selectedOption,
+    approval_reqd,
+    approver_id,
     empID,
     empName,
   } = req.body;
+
+  
 
   const sql =
     "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by, support_person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -155,11 +157,11 @@ app.post("/it_reply", (req, res) => {
       ticketStatus,
       ccList,
       solutionTime,
-      department, 
+      department,
       description,
       imageData,
-      approvalRequired,
-      selectedOption,
+      approval_reqd,
+      approver_id,
       empID,
       empName,
     ],

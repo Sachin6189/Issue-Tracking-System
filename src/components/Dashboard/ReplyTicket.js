@@ -53,16 +53,17 @@ const ReplyTicket = ({ issue, onClose }) => {
     setShowForm(false);
   };
 
+  
   const handleSave = async () => {
     try {
       if (!description) {
         throw new Error("Solution is a mandatory field.");
       }
-  
+
       if (approvalRequired && !selectedOption) {
         throw new Error("Please select an employee for approval.");
       }
-  
+
       const replyData = {
         ticketId,
         ticketStatus,
@@ -71,16 +72,18 @@ const ReplyTicket = ({ issue, onClose }) => {
         department,
         description,
         imageData,
-        approvalRequired,
-        selectedOption: selectedOption ? selectedOption.value : null,
+        // approvalRequired,
+        // selectedOption: selectedOption ? selectedOption.value : null,
         empID,
         empName,
+        approver_id: selectedOption ? selectedOption.value : null, // Add the approver ID
+        approval_reqd: approvalRequired ? 1 : 0, // Add the approval required flag
       };
-  
+
       const res = await axios.post("http://localhost:5000/it_reply", replyData);
       alert(res.data);
       setIsSubmitted(true);
-  
+
       setCcList("");
       setSolutionTime("");
       setApprovalRequired(false);
@@ -88,7 +91,7 @@ const ReplyTicket = ({ issue, onClose }) => {
       setDescription("");
       setImageData("");
       setShowForm(false);
-      
+
       // Close the popup
       onClose();
     } catch (error) {
