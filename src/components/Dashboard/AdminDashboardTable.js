@@ -14,7 +14,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [popupTicket, setTicketPopup] = useState(null);
 
-  const loggedInUserId = sessionStorage.getItem("emp_id")
+  const loggedInUserId = sessionStorage.getItem("emp_id");
 
   const handleIssueClick = (issue) => {
     setSelectedIssue(issue);
@@ -220,7 +220,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
                   })}
                 </td>
                 <td className="px-4 py-2">
-                  {item.approval_reqd == "1" && item.approver_id === loggedInUserId ? (
+                  {item.approval_reqd && item.approver_id === loggedInUserId ? (
                     <button
                       className="px-2 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
                       onClick={() => handleTakeActionClick(item)}

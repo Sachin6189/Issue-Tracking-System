@@ -7,7 +7,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import _ from "lodash";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
+
 
 const ReplyTicket = ({ issue, onClose }) => {
   const [imageData, setImageData] = useState("");
@@ -76,8 +76,8 @@ const ReplyTicket = ({ issue, onClose }) => {
         // selectedOption: selectedOption ? selectedOption.value : null,
         empID,
         empName,
-        approver_id: selectedOption ? selectedOption.value : null, // Add the approver ID
-        approval_reqd: approvalRequired ? 1 : 0, // Add the approval required flag
+        approver_id: selectedOption ? selectedOption.value : null, 
+        approval_reqd: approvalRequired ? 1 : 0,
       };
 
       const res = await axios.post("http://localhost:5000/it_reply", replyData);
