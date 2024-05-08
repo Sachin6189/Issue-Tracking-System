@@ -19,8 +19,10 @@ const AdminMain = () => {
   const [unclaimedTicketsCount, setUnclaimedTicketsCount] = useState(0);
   const [resolvedTicketsCount, setResolvedTicketsCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const navigate = useNavigate();
+  
 
   const handleChangeStart = (date) => {
     setStartDate(date);
@@ -35,21 +37,24 @@ const AdminMain = () => {
   };
 
   useEffect(() => {
+    const loggedInUser = sessionStorage.getItem("username");
+    setLoggedInUser(loggedInUser);
+  
     async function fetchData() {
       const res = await axios.get(`http://localhost:5000/it_tickets`);
       const jsonData = await res.data;
       setTickets(jsonData);
-
+  
       const openTickets = jsonData.filter(
         (ticket) => ticket.ticket_status === "Open"
       );
       setOpenTicketsCount(openTickets.length);
-
+  
       const resolvedTickets = jsonData.filter(
         (ticket) => ticket.ticket_status === "Closed"
       );
       setResolvedTicketsCount(resolvedTickets.length);
-
+  
       const unclaimedTickets = jsonData.filter(
         (ticket) =>
           !["Open", "Closed", "Rejected", "Re-Opened"].includes(
@@ -62,7 +67,10 @@ const AdminMain = () => {
   }, []);
 
   const NoOfTicketsRaised = tickets.length;
-  const TicketsPending = 0;
+  const pendingTicketsCount = tickets.filter(
+    (ticket) =>
+      ticket.support_person === loggedInUser && ticket.ticket_status === "Open"
+  ).length;
 
   return (
     <div>
@@ -134,8 +142,11 @@ const AdminMain = () => {
           </div>
           <div className="pl-10">
             <div>Tickets Pending On Me</div>
-            <div className="text-3xl">{TicketsPending}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
+            <div className="text-3xl">{pendingTicketsCount}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Pending")}
+            >
               Show Pending Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
@@ -156,7 +167,6 @@ const AdminMain = () => {
             </div>
           </div>
         </div>
-
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-green-500 rounded-lg font-semibold text-green-500 font-[fangsong]">
           <div className="w-1/4">
             <img src={Resolved} alt="" />
@@ -174,7 +184,11 @@ const AdminMain = () => {
         </div>
       </div>
       
-      <AdminDashboardTable tickets={tickets} filteredStatus={filterStatus} />
+      <AdminDashboardTable
+        tickets={tickets}
+        filteredStatus={filterStatus}
+        loggedInUser={loggedInUser}
+      />
     </div>
   );
 };

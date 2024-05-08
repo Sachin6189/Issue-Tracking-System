@@ -5,7 +5,7 @@ import ReplyTicket from "./ReplyTicket";
 import claim from "../assets/select.png";
 import TicketPopup from "./TicketPopup";
 
-const AdminDashboardTable = ({ filteredStatus }) => {
+const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +13,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
   const [itemsPerPage] = useState(10);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [popupTicket, setTicketPopup] = useState(null);
+  const [pendingTicketsCount, setPendingTicketsCount] = useState(0);
 
   const loggedInUserId = sessionStorage.getItem("emp_id");
 
@@ -20,11 +21,13 @@ const AdminDashboardTable = ({ filteredStatus }) => {
     try {
       // Fetch approval data only if the approval_status is 'Approved'
       if (issue.approval_reqd) {
-        const res = await axios.get(`http://localhost:5000/api/approval/${issue.ticket_id}`);
+        const res = await axios.get(
+          `http://localhost:5000/api/approval/${issue.ticket_id}`
+        );
         const approvalData = res.data;
-  
+
         // Check if the approval_status is 'Approved'
-        if (approvalData.approval_status === 'approve') {
+        if (approvalData.approval_status === "approve") {
           setSelectedIssue({ ...issue, approvalData });
         } else {
           setSelectedIssue(issue);
@@ -33,7 +36,7 @@ const AdminDashboardTable = ({ filteredStatus }) => {
         setSelectedIssue(issue);
       }
     } catch (error) {
-      console.error('Error fetching approval data:', error);
+      console.error("Error fetching approval data:", error);
       setSelectedIssue(issue);
     }
   };
@@ -45,12 +48,25 @@ const AdminDashboardTable = ({ filteredStatus }) => {
   useEffect(() => {
     async function fetchData() {
       const res = await axios.get(`http://localhost:5000/it_tickets`);
-      const Data = await res.data;
-      const sortedData = Data.slice().sort(
-        (a, b) => new Date(b.raised_time) - new Date(a.raised_time)
-      );
+      const jsonData = await res.data;
+      const sortedData = jsonData
+        .slice()
+        .sort((a, b) => new Date(b.raised_time) - new Date(a.raised_time));
 
       setData(sortedData);
+
+      const pendingTickets = sortedData.filter(
+  (ticket) =>
+    ticket.ticket_status === "Open" && ticket.support_person === loggedInUser
+);
+setPendingTicketsCount(pendingTickets.length);
+
+if (filteredStatus === "Pending") {
+  setFilterData(pendingTickets);
+}
+      setPendingTicketsCount(pendingTickets.length);
+      setPendingTicketsCount(pendingTickets.length);
+      setPendingTicketsCount(pendingTickets.length);
 
       if (filteredStatus === "Open") {
         setFilterData(
@@ -69,13 +85,21 @@ const AdminDashboardTable = ({ filteredStatus }) => {
               )
           )
         );
+      } else if (filteredStatus === "Pending") {
+        setFilterData(
+          sortedData.filter(
+            (ticket) =>
+              ticket.support_person === loggedInUser &&
+              ticket.ticket_status === "Open"
+          )
+        );
       } else {
         setFilterData(sortedData);
       }
     }
 
     fetchData();
-  }, [filteredStatus]);
+  }, [filteredStatus, loggedInUser]);
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
