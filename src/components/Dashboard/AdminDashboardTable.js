@@ -56,17 +56,18 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
       setData(sortedData);
 
       const pendingTickets = sortedData.filter(
-  (ticket) =>
-    ticket.ticket_status === "Open" && ticket.support_person === loggedInUser
-);
-setPendingTicketsCount(pendingTickets.length);
+        (ticket) =>
+          ticket.ticket_status === "Open" &&
+          ticket.support_person === loggedInUser
+      );
+      setPendingTicketsCount(pendingTickets.length);
 
-if (filteredStatus === "Pending") {
-  setFilterData(pendingTickets);
-}
-      setPendingTicketsCount(pendingTickets.length);
-      setPendingTicketsCount(pendingTickets.length);
-      setPendingTicketsCount(pendingTickets.length);
+      if (filteredStatus === "Pending") {
+        setFilterData(pendingTickets);
+      }
+      // setPendingTicketsCount(pendingTickets.length);
+      // setPendingTicketsCount(pendingTickets.length);
+      // setPendingTicketsCount(pendingTickets.length);
 
       if (filteredStatus === "Open") {
         setFilterData(

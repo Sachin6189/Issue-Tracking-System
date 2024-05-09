@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = mysql.createConnection({
-  host: "172.27.129.80",
-  user: "share_user",
-  password: "share_user",
-  database: "testdb",
-});
-
 // const db = mysql.createConnection({
-//   host: "127.0.0.1",
-//   user: "root",
-//   password: "",
-//   database: "test",
+//   host: "172.27.129.80",
+//   user: "share_user",
+//   password: "share_user",
+//   database: "testdb",
 // });
+
+const db = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "test",
+});
 
 db.connect((err) => {
   if (err) throw err;
@@ -121,6 +121,7 @@ app.get("/it_tickets", (req, res) => {
     res.send(result);
   });
 });
+
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
@@ -246,37 +247,47 @@ app.post("/approve_reject", (req, res) => {
   const sql =
     "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, remarks, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-  db.query(
-    sql,
-    [
-      ticketId,
-      approverId,
-      projectName,
-      moduleName,
-      category,
-      issueTitle,
-      remarks,
-      approvalStatus,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).send("Internal server error");
+    db.query(
+      sql,
+      [
+        ticketId,
+        approverId,
+        projectName,
+        moduleName,
+        category,
+        issueTitle,
+        remarks,
+        approvalStatus,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).send("Internal server error");
+        }
+  
+        // Update the approval_reqd and approver_id fields in the it_tickets table
+        const updateTicketSql =
+          "UPDATE it_reply SET approval_reqd = 0, approver_id = ? WHERE ticket_id = ?";
+        db.query(updateTicketSql, [approverId, ticketId], (err, result) => {
+          if (err) {
+            console.error("Error executing query:", err);
+            return res.status(500).send("Internal server error");
+          }
+          res.status(200).send("Data sent successfully!");
+        });
       }
-      res.status(200).send("Data sent successfully!");
-    }
-  );
-});
-
-app.get('/api/approval/:ticketId', (req, res) => {
-  const ticketId = req.params.ticketId;
-  const sql = 'SELECT * FROM it_approval WHERE ticket_id = ?';
-
-  db.query(sql, [ticketId], (err, result) => {
-    if (err) throw err;
-    res.send(result[0] || {}); // Send the first result if available, otherwise an empty object
+    );
   });
-});
+  
+  app.get('/api/approval/:ticketId', (req, res) => {
+    const ticketId = req.params.ticketId;
+    const sql = 'SELECT * FROM it_approval WHERE ticket_id = ?';
+  
+    db.query(sql, [ticketId], (err, result) => {
+      if (err) throw err;
+      res.send(result[0] || {}); // Send the first result if available, otherwise an empty object
+    });
+  });
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");
@@ -309,9 +320,9 @@ app.get('/api/approval/:ticketId', (req, res) => {
 //     res.send("Reply data saved successfully.");
 //   }
 // });
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  
+  const PORT = process.env.PORT || 5000;
+  
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
