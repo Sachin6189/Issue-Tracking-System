@@ -64,9 +64,9 @@ setPendingTicketsCount(pendingTickets.length);
 if (filteredStatus === "Pending") {
   setFilterData(pendingTickets);
 }
-      setPendingTicketsCount(pendingTickets.length);
-      setPendingTicketsCount(pendingTickets.length);
-      setPendingTicketsCount(pendingTickets.length);
+      // setPendingTicketsCount(pendingTickets.length);
+      // setPendingTicketsCount(pendingTickets.length);
+      // setPendingTicketsCount(pendingTickets.length);
 
       if (filteredStatus === "Open") {
         setFilterData(

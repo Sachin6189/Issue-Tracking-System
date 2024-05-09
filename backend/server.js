@@ -121,9 +121,34 @@ app.get("/it_tickets", (req, res) => {
     res.send(result);
   });
 });
+
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
+
+  db.query(sql, [empId], (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
+app.get("/it_tickets_status/:empId", (req, res) => {
+  const empId = req.params.empId;
+  const sql = `
+    SELECT 
+      it_tickets.ticket_id,
+      it_tickets.project_name,
+      it_tickets.module_name,
+      it_tickets.category,
+      it_tickets.issue_title,
+      it_tickets.raised_time,
+      it_reply.ticket_status,
+      it_reply.support_person,
+      it_tickets.contact  
+    FROM it_tickets
+    LEFT JOIN it_reply ON it_tickets.ticket_id = it_reply.ticket_id
+    WHERE it_tickets.emp_id = ?;
+  `;
 
   db.query(sql, [empId], (err, result) => {
     if (err) throw err;
@@ -268,9 +293,9 @@ app.post("/approve_reject", (req, res) => {
   );
 });
 
-app.get('/api/approval/:ticketId', (req, res) => {
+app.get("/api/approval/:ticketId", (req, res) => {
   const ticketId = req.params.ticketId;
-  const sql = 'SELECT * FROM it_approval WHERE ticket_id = ?';
+  const sql = "SELECT * FROM it_approval WHERE ticket_id = ?";
 
   db.query(sql, [ticketId], (err, result) => {
     if (err) throw err;

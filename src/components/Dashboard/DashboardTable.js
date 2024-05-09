@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import _ from "lodash";
-import ReplyTicket from "./ReplyTicket";
-import teams from "../assets/teams.png";
-import select from "../assets/select.png";
 import TicketPopup from "./TicketPopup";
+
 const DashboardTable = () => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const [selectedIssue, setSelectedIssue] = useState(null);
   const [popupTicket, setPopupTicket] = useState(null);
-
-  const handleIssueClick = (issue) => {
-    setSelectedIssue(issue);
-  };
 
   const handleTakeActionClick = (ticket) => {
     setPopupTicket(ticket);
@@ -27,16 +20,10 @@ const DashboardTable = () => {
       const loggedInEmpId = sessionStorage.getItem("emp_id");
 
       if (loggedInEmpId) {
-        const res = await axios.get(
-          `http://localhost:5000/it_tickets/${loggedInEmpId}`
-        );
+        const res = await axios.get(`http://localhost:5000/it_tickets_status/${loggedInEmpId}`);
         const Data = await res.data;
-        const sortedData = Data.slice().sort(
-          (a, b) => new Date(b.raised_time) - new Date(a.raised_time)
-        );
-
-        setData(sortedData);
-        setFilterData(sortedData);
+        setData(Data);
+        setFilterData(Data);
       }
     }
 
@@ -51,7 +38,8 @@ const DashboardTable = () => {
           item.module_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.issue_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.contact.toLowerCase().includes(searchTerm.toLowerCase())
+          item.support_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.status.toLowerCase().includes(searchTerm.toLowerCase()) // Add status filtering
       )
     );
     setCurrentPage(1);
@@ -156,11 +144,11 @@ const DashboardTable = () => {
               <th className="px-4 py-2 text-left">Module</th>
               <th className="px-4 py-2 text-left">Category</th>
               <th className="px-4 py-2 text-left">Issue Title</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Support Person</th>
               <th className="px-4 py-2 text-left">Contact No.</th>
               <th className="px-4 py-2 text-left">Raised Time</th>
-          
-              <th className="px-4 py-2 text-left">Approve/Rejected</th>{" "}
-              {/* New column */}
+              <th className="px-4 py-2 text-left">Take Action</th>
             </tr>
           </thead>
           <tbody>
@@ -169,21 +157,13 @@ const DashboardTable = () => {
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
               >
-                <td
-                  className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
-                  onClick={() => handleIssueClick(item)}
-                >
-                  {item.ticket_id}
-                </td>
+                <td className="px-4 py-2">{item.ticket_id}</td>
                 <td className="px-4 py-2">{item.project_name}</td>
                 <td className="px-4 py-2">{item.module_name}</td>
                 <td className="px-4 py-2">{item.category}</td>
-                <td
-                  className="px-4 py-2 cursor-pointer text-blue-500 hover:underline"
-                  onClick={() => handleIssueClick(item)}
-                >
-                  {item.issue_title}
-                </td>
+                <td className="px-4 py-2">{item.issue_title}</td>
+                <td className="px-4 py-2">{item.ticket_status || "Unclaimed"}</td>
+                <td className="px-4 py-2">{item.support_person || "N/A"}</td>
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
                   {new Date(item.raised_time).toLocaleString("en-IN", {
@@ -195,7 +175,6 @@ const DashboardTable = () => {
                     hour12: true,
                   })}
                 </td>
-               
                 <td className="px-4 py-2">
                   <div>
                     <button
@@ -245,18 +224,10 @@ const DashboardTable = () => {
         </div>
       </div>
 
-      
       {popupTicket && (
         <TicketPopup
           ticket={popupTicket}
           onClose={() => setPopupTicket(null)}
-        />
-      )}
-
-      {selectedIssue && (
-        <ReplyTicket
-          issue={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
         />
       )}
     </div>
