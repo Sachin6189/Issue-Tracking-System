@@ -122,11 +122,25 @@ app.get("/it_tickets", (req, res) => {
   });
 });
 
+// app.get("/it_tickets/:empId", (req, res) => {
+//   const empId = req.params.empId;
+//   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
+
+//   db.query(sql, [empId], (err, result) => {
+//     if (err) throw err;
+//     res.send(result);
+//   });
+// });
+
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
-  const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
+  const sql = `SELECT * 
+  FROM it_tickets AS t1 
+  LEFT OUTER JOIN it_reply AS t2 ON t1.ticket_id = t2.ticket_id 
+  WHERE (t1.emp_id = ? OR t2.approver_id = ?)
+  `;
 
-  db.query(sql, [empId], (err, result) => {
+  db.query(sql, [empId,empId], (err, result) => {
     if (err) throw err;
     res.send(result);
   });
