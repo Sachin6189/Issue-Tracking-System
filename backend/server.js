@@ -191,7 +191,7 @@ app.post("/it_reply", (req, res) => {
     if (err) throw err;
 
     if (result.length > 0) {
-      // If a row exists, update the row
+      
       const updateQuery =
         "UPDATE it_reply SET ticket_status = ?, cc_list = ?, solution_time = ?, department = ?, description = ?, image_data = ?, approval_reqd = ?, approver_id = ?, created_by = ?, support_person = ? WHERE ticket_id = ?";
       db.query(
