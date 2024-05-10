@@ -23,6 +23,7 @@ const DashboardTable = () => {
         const res = await axios.get(`http://localhost:5000/it_tickets_status/${loggedInEmpId}`);
         const Data = await res.data;
         setData(Data);
+        console.log(Data)
         setFilterData(Data);
       }
     }

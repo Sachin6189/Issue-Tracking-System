@@ -38,7 +38,7 @@ const Main = () => {
       const res = await axios.get(`http://localhost:5000/it_tickets/${empID}`);
       const jsonData = await res.data;
       setTickets(jsonData);
-      console.log(jsonData.length);
+      
     }
     fetchData();
   }, []);

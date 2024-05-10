@@ -70,8 +70,6 @@ const ReplyTicket = ({ issue, onClose }) => {
         department,
         description,
         imageData,
-        // approvalRequired,
-        // selectedOption: selectedOption ? selectedOption.value : null,
         empID,
         empName,
         approver_id: selectedOption ? selectedOption.value : null,
