@@ -20,14 +20,19 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
   const handleIssueClick = async (issue) => {
     try {
       // Fetch approval data only if the approval_status is 'Approved'
-      if (issue.approval_reqd) {
+      // console.log(issue)
+      if (issue) {
         const res = await axios.get(
           `http://localhost:5000/api/approval/${issue.ticket_id}`
         );
+        console.log(res);
         const approvalData = res.data;
-
+        // console.log(approvalData);
         // Check if the approval_status is 'Approved'
-        if (approvalData.approval_status === "approve") {
+        if (
+          approvalData.approval_status === "approve" ||
+          approvalData.approval_status === "reject"
+        ) {
           setSelectedIssue({ ...issue, approvalData });
         } else {
           setSelectedIssue(issue);
@@ -56,14 +61,15 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
       setData(sortedData);
 
       const pendingTickets = sortedData.filter(
-  (ticket) =>
-    ticket.ticket_status === "Open" && ticket.support_person === loggedInUser
-);
-setPendingTicketsCount(pendingTickets.length);
+        (ticket) =>
+          ticket.ticket_status === "Open" &&
+          ticket.support_person === loggedInUser
+      );
+      setPendingTicketsCount(pendingTickets.length);
 
-if (filteredStatus === "Pending") {
-  setFilterData(pendingTickets);
-}
+      if (filteredStatus === "Pending") {
+        setFilterData(pendingTickets);
+      }
       // setPendingTicketsCount(pendingTickets.length);
       // setPendingTicketsCount(pendingTickets.length);
       // setPendingTicketsCount(pendingTickets.length);

@@ -89,7 +89,7 @@ const Main = () => {
             <div>Ticket Raised</div>
             <div className="text-3xl">{NoOfTicketsRaised}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+              Show Tickets Raised By Me <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ const Main = () => {
             <div>Rejected Tickets</div>
             <div className="text-3xl">{RejectedTickets}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+              Show Rejected Tickets <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ const Main = () => {
             <div>Tickets Pending</div>
             <div className="text-3xl">{TicketsPending}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              Show Pending Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ const Main = () => {
             <div>Unclaimed Tickets</div>
             <div className="text-3xl">{UnclaimedTickets}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              Show Unclaimed Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ const Main = () => {
             <div>Tickets Resolved</div>
             <div className="text-3xl">{TicketsResolvedByMyself}</div>
             <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              More Info <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+              Show Tickets Resolved <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
             </div>
           </div>
         </div>

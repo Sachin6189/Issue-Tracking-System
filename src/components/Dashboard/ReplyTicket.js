@@ -25,7 +25,7 @@ const ReplyTicket = ({ issue, onClose }) => {
   const empName = sessionStorage.getItem("username");
 
   const { approvalData = {} } = issue;
-  const { approver_id, remarks, approval_status } = approvalData;
+  const { approver_id, remarks, approval_status, approval_time } = approvalData;
 
   const username = issue.raised_by;
   const EmpID = issue.emp_id;
@@ -255,7 +255,7 @@ const ReplyTicket = ({ issue, onClose }) => {
               </div>
             </div>
             <div className="bg-gray-100 p-4 rounded-md shadow-md">
-              {approvalData && approval_status === "approve" && (
+              {issue && issue.approvalData && (
                 <div className="mt-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     Approval Details:
@@ -270,8 +270,20 @@ const ReplyTicket = ({ issue, onClose }) => {
                       dangerouslySetInnerHTML={{ __html: remarks }}
                     ></div>
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 mb-2">
                     Approval Status: {approval_status}
+                  </p>
+                  <p className="text-gray-600">
+                    Approval Time:{" "}
+                    {approval_time &&
+                      new Date(approval_time).toLocaleString("en-IN", {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
                   </p>
                 </div>
               )}

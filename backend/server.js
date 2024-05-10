@@ -122,29 +122,29 @@ app.get("/it_tickets", (req, res) => {
   });
 });
 
-// app.get("/it_tickets/:empId", (req, res) => {
-//   const empId = req.params.empId;
-//   const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
-
-//   db.query(sql, [empId], (err, result) => {
-//     if (err) throw err;
-//     res.send(result);
-//   });
-// });
-
 app.get("/it_tickets/:empId", (req, res) => {
   const empId = req.params.empId;
-  const sql = `SELECT * 
-  FROM it_tickets AS t1 
-  LEFT OUTER JOIN it_reply AS t2 ON t1.ticket_id = t2.ticket_id 
-  WHERE (t1.emp_id = ? OR t2.approver_id = ?)
-  `;
+  const sql = "SELECT * FROM it_tickets WHERE emp_id = ?";
 
-  db.query(sql, [empId,empId], (err, result) => {
+  db.query(sql, [empId], (err, result) => {
     if (err) throw err;
     res.send(result);
   });
 });
+
+// app.get("/it_tickets/:empId", (req, res) => {
+//   const empId = req.params.empId;
+//   const sql = `SELECT * 
+//   FROM it_tickets AS t1 
+//   LEFT OUTER JOIN it_reply AS t2 ON t1.ticket_id = t2.ticket_id 
+//   WHERE (t1.emp_id = ? OR t2.approver_id = ?)
+//   `;
+
+//   db.query(sql, [empId,empId], (err, result) => {
+//     if (err) throw err;
+//     res.send(result);
+//   });
+// });
 
 app.get("/it_tickets_status/:empId", (req, res) => {
   const empId = req.params.empId;
@@ -185,29 +185,61 @@ app.post("/it_reply", (req, res) => {
     empName,
   } = req.body;
 
-  const sql =
-    "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by, support_person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  // First, check if a row with the given ticketId exists in the it_reply table
+  const checkQuery = "SELECT * FROM it_reply WHERE ticket_id = ?";
+  db.query(checkQuery, [ticketId], (err, result) => {
+    if (err) throw err;
 
-  db.query(
-    sql,
-    [
-      ticketId,
-      ticketStatus,
-      ccList,
-      solutionTime,
-      department,
-      description,
-      imageData,
-      approval_reqd,
-      approver_id,
-      empID,
-      empName,
-    ],
-    (err, result) => {
-      if (err) throw err;
-      res.status(200).send("Data sent successfully!");
+    if (result.length > 0) {
+      
+      const updateQuery =
+        "UPDATE it_reply SET ticket_status = ?, cc_list = ?, solution_time = ?, department = ?, description = ?, image_data = ?, approval_reqd = ?, approver_id = ?, created_by = ?, support_person = ? WHERE ticket_id = ?";
+      db.query(
+        updateQuery,
+        [
+          ticketStatus,
+          ccList,
+          solutionTime,
+          department,
+          description,
+          imageData,
+          approval_reqd,
+          approver_id,
+          empID,
+          empName,
+          ticketId,
+        ],
+        (err, result) => {
+          if (err) throw err;
+          res.status(200).send("Data updated successfully!");
+        }
+      );
+    } else {
+      
+      const insertQuery =
+        "INSERT INTO it_reply (ticket_id, ticket_status, cc_list, solution_time, department, description, image_data, approval_reqd, approver_id, created_by, support_person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      db.query(
+        insertQuery,
+        [
+          ticketId,
+          ticketStatus,
+          ccList,
+          solutionTime,
+          department,
+          description,
+          imageData,
+          approval_reqd,
+          approver_id,
+          empID,
+          empName,
+        ],
+        (err, result) => {
+          if (err) throw err;
+          res.status(200).send("Data sent successfully!");
+        }
+      );
     }
-  );
+  });
 });
 
 app.get("/api/employees", (req, res) => {
@@ -285,37 +317,56 @@ app.post("/approve_reject", (req, res) => {
   const sql =
     "INSERT INTO it_approval (ticket_id, approver_id, project_name, module_name, category, issue_title, remarks, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-  db.query(
-    sql,
-    [
-      ticketId,
-      approverId,
-      projectName,
-      moduleName,
-      category,
-      issueTitle,
-      remarks,
-      approvalStatus,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).send("Internal server error");
+    db.query(
+      sql,
+      [
+        ticketId,
+        approverId,
+        projectName,
+        moduleName,
+        category,
+        issueTitle,
+        remarks,
+        approvalStatus,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).send("Internal server error");
+        }
+  
+        // Update the approval_reqd and approver_id fields in the it_tickets table
+        const updateTicketSql =
+          "UPDATE it_reply SET approval_reqd = 0, approver_id = ? WHERE ticket_id = ?";
+        db.query(updateTicketSql, [approverId, ticketId], (err, result) => {
+          if (err) {
+            console.error("Error executing query:", err);
+            return res.status(500).send("Internal server error");
+          }
+          res.status(200).send("Data sent successfully!");
+        });
       }
-      res.status(200).send("Data sent successfully!");
-    }
-  );
-});
-
-app.get("/api/approval/:ticketId", (req, res) => {
-  const ticketId = req.params.ticketId;
-  const sql = "SELECT * FROM it_approval WHERE ticket_id = ?";
-
-  db.query(sql, [ticketId], (err, result) => {
-    if (err) throw err;
-    res.send(result[0] || {}); // Send the first result if available, otherwise an empty object
+    );
   });
-});
+
+
+
+  app.get("/api/approval/:ticketId", (req, res) => {
+    const ticketId = req.params.ticketId;
+    const sql = "SELECT * FROM it_approval WHERE ticket_id = ?";
+  
+    db.query(sql, [ticketId], (err, result) => {
+      if (err) {
+        console.error("Error fetching approval data:", err);
+        res.status(500).send("Internal server error");
+        return;
+      }
+    
+
+      res.send(result[0] || {});
+    });
+  });
+  
 
 // const pathToDataDirectory = "../public/Data";
 // const dataFilePath = path.join(pathToDataDirectory, "data.json");
