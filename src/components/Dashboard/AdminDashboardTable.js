@@ -28,7 +28,7 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
         console.log(res);
         const approvalData = res.data;
         // console.log(approvalData);
-        // Check if the approval_status is 'Approved'
+        // Check if the approval_status is 'Approved' or 'Rejected'
         if (
           approvalData.approval_status === "approve" ||
           approvalData.approval_status === "reject"
@@ -70,9 +70,6 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
       if (filteredStatus === "Pending") {
         setFilterData(pendingTickets);
       }
-      // setPendingTicketsCount(pendingTickets.length);
-      // setPendingTicketsCount(pendingTickets.length);
-      // setPendingTicketsCount(pendingTickets.length);
 
       if (filteredStatus === "Open") {
         setFilterData(

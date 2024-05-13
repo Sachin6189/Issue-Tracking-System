@@ -11,12 +11,16 @@ import Arrow from "../../components/assets/arrow-right.png";
 import axios from "axios";
 import DashboardTable from "./DashboardTable";
 
-
 const Main = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [tickets, setTickets] = useState([]);
-
+  const [noOfTicketsRaised, setNoOfTicketsRaised] = useState(0);
+  const [rejectedTickets, setRejectedTickets] = useState(0);
+  const [ticketsPending, setTicketsPending] = useState(0);
+  const [unclaimedTickets, setUnclaimedTickets] = useState(0);
+  const [ticketsResolved, setTicketsResolved] = useState(0);
+  const [filterStatus, setFilterStatus] = useState("");
   const navigate = useNavigate();
 
   const handleChangeStart = (date) => {
@@ -31,23 +35,40 @@ const Main = () => {
     navigate("/dashboard/raiseTicket");
   };
 
-  const empID = sessionStorage.getItem("emp_id")
+  const empID = sessionStorage.getItem("emp_id");
 
   useEffect(() => {
     async function fetchData() {
-      const res = await axios.get(`http://localhost:5000/it_tickets/${empID}`);
+      const res = await axios.get(
+        `http://localhost:5000/it_tickets_status/${empID}`
+      );
       const jsonData = await res.data;
       setTickets(jsonData);
-      
+
+      // Filter tickets based on their status
+      const raisedTickets = jsonData.length;
+      const rejectedTickets = jsonData.filter(
+        (ticket) => ticket.ticket_status === "Rejected"
+      ).length;
+      const pendingTickets = jsonData.filter(
+        (ticket) => ticket.ticket_status === "Open"
+      ).length;
+      console.log(jsonData);
+      const unclaimedTickets = jsonData.filter(
+        (ticket) => !ticket.ticket_status
+      ).length;
+      const resolvedTickets = jsonData.filter(
+        (ticket) => ticket.ticket_status === "Closed"
+      ).length;
+
+      setNoOfTicketsRaised(raisedTickets);
+      setRejectedTickets(rejectedTickets);
+      setTicketsPending(pendingTickets);
+      setUnclaimedTickets(unclaimedTickets);
+      setTicketsResolved(resolvedTickets);
     }
     fetchData();
   }, []);
-
-  const NoOfTicketsRaised = tickets.length;
-  const RejectedTickets = 0;
-  const TicketsPending = 0;
-  const UnclaimedTickets = tickets.length;
-  const TicketsResolvedByMyself = 0;
 
   return (
     <div>
@@ -87,9 +108,13 @@ const Main = () => {
           </div>
           <div className="pl-10 ">
             <div>Ticket Raised</div>
-            <div className="text-3xl">{NoOfTicketsRaised}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              Show Tickets Raised By Me <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+            <div className="text-3xl">{noOfTicketsRaised}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("")}
+            >
+              Show Tickets Raised By Me{" "}
+              <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -100,9 +125,13 @@ const Main = () => {
           </div>
           <div className="pl-10">
             <div>Rejected Tickets</div>
-            <div className="text-3xl">{RejectedTickets}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              Show Rejected Tickets <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
+            <div className="text-3xl">{rejectedTickets}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Rejected")}
+            >
+              Show Rejected Tickets{" "}
+              <img className="pl-1 h-4 w-4" src={Arrow} alt="" />
             </div>
           </div>
         </div>
@@ -113,40 +142,52 @@ const Main = () => {
           </div>
           <div className="pl-10">
             <div>Tickets Pending</div>
-            <div className="text-3xl">{TicketsPending}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              Show Pending Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+            <div className="text-3xl">{ticketsPending}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Pending")}
+            >
+              Show Pending Tickets{" "}
+              <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-purple-500 rounded-lg font-semibold text-purple-500 font-[fangsong] ">
           <div className="w-1/4">
-            <img src={Unclaimed} alt=""/>
+            <img src={Unclaimed} alt="" />
           </div>
           <div className="pl-9">
             <div>Unclaimed Tickets</div>
-            <div className="text-3xl">{UnclaimedTickets}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              Show Unclaimed Tickets <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+            <div className="text-3xl">{unclaimedTickets}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Unclaimed")}
+            >
+              Show Unclaimed Tickets{" "}
+              <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
 
         <div className="flex flex-row items-center bg-gray-200 text-sm p-4 m-2 w-full h-24 border-l-8 border-green-500 rounded-lg font-semibold text-green-500 font-[fangsong]">
           <div className="w-1/4">
-            <img src={Resolved} alt=""/>
+            <img src={Resolved} alt="" />
           </div>
           <div className="pl-10">
             <div>Tickets Resolved</div>
-            <div className="text-3xl">{TicketsResolvedByMyself}</div>
-            <div className="mt-2 flex text-gray-600 text-xs cursor-pointer">
-              Show Tickets Resolved <img className="h-4 w-4 pl-1" src={Arrow} alt=""/>
+            <div className="text-3xl">{ticketsResolved}</div>
+            <div
+              className="mt-2 flex text-gray-600 text-xs cursor-pointer"
+              onClick={() => setFilterStatus("Resolved")}
+            >
+              Show Tickets Resolved{" "}
+              <img className="h-4 w-4 pl-1" src={Arrow} alt="" />
             </div>
           </div>
         </div>
       </div>
-      <DashboardTable />
+      <DashboardTable tickets={tickets} filteredStatus={filterStatus} />
     </div>
   );
 };
