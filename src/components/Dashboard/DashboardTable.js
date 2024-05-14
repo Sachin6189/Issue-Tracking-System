@@ -17,6 +17,7 @@ const DashboardTable = ({filteredStatus}) => {
 
   console.log(filteredStatus)
   const loggedInEmpId = sessionStorage.getItem("emp_id");
+  
   useEffect(() => {
     async function fetchData() {
       if (loggedInEmpId) {
@@ -24,17 +25,28 @@ const DashboardTable = ({filteredStatus}) => {
           `http://localhost:5000/it_tickets_status/${loggedInEmpId}`
         );
         const Data = await res.data;
+  
+        // Filter data based on filteredStatus prop
+        let filteredData;
+        if (filteredStatus === "Rejected") {
+          filteredData = Data.filter((item) => item.ticket_status === "Rejected");
+        } else if (filteredStatus === "Pending") {
+          filteredData = Data.filter((item) => item.ticket_status === "Open");
+        } else if (filteredStatus === "Unclaimed") {
+          filteredData = Data.filter((item) => !item.ticket_status);
+        } else if (filteredStatus === "Resolved") {
+          filteredData = Data.filter((item) => item.ticket_status === "Closed");
+        } else {
+          filteredData = Data;
+        }
+  
         setData(Data);
-        // console.log(Data);
-        setFilterData(Data);
-        
+        setFilterData(filteredData);
       }
-
-      
     }
-
+  
     fetchData();
-  }, []);
+  }, [filteredStatus, loggedInEmpId]);
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
