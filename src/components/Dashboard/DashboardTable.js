@@ -3,7 +3,7 @@ import axios from "axios";
 import _ from "lodash";
 import TicketPopup from "./TicketPopup";
 
-const DashboardTable = () => {
+const DashboardTable = ({filteredStatus}) => {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,20 +15,38 @@ const DashboardTable = () => {
     setPopupTicket(ticket);
   };
 
+  console.log(filteredStatus)
+  const loggedInEmpId = sessionStorage.getItem("emp_id");
+  
   useEffect(() => {
     async function fetchData() {
-      const loggedInEmpId = sessionStorage.getItem("emp_id");
-
       if (loggedInEmpId) {
-        const res = await axios.get(`http://localhost:5000/it_tickets_status/${loggedInEmpId}`);
+        const res = await axios.get(
+          `http://localhost:5000/it_tickets_status/${loggedInEmpId}`
+        );
         const Data = await res.data;
+  
+        // Filter data based on filteredStatus prop
+        let filteredData;
+        if (filteredStatus === "Rejected") {
+          filteredData = Data.filter((item) => item.ticket_status === "Rejected");
+        } else if (filteredStatus === "Pending") {
+          filteredData = Data.filter((item) => item.ticket_status === "Open");
+        } else if (filteredStatus === "Unclaimed") {
+          filteredData = Data.filter((item) => !item.ticket_status);
+        } else if (filteredStatus === "Resolved") {
+          filteredData = Data.filter((item) => item.ticket_status === "Closed");
+        } else {
+          filteredData = Data;
+        }
+  
         setData(Data);
-        setFilterData(Data);
+        setFilterData(filteredData);
       }
     }
-
+  
     fetchData();
-  }, []);
+  }, [filteredStatus, loggedInEmpId]);
 
   const debouncedFilterData = _.debounce((searchTerm) => {
     setFilterData(
@@ -38,7 +56,9 @@ const DashboardTable = () => {
           item.module_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.issue_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.support_person.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.support_person
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           item.status.toLowerCase().includes(searchTerm.toLowerCase()) // Add status filtering
       )
     );
@@ -162,28 +182,35 @@ const DashboardTable = () => {
                 <td className="px-4 py-2">{item.module_name}</td>
                 <td className="px-4 py-2">{item.category}</td>
                 <td className="px-4 py-2">{item.issue_title}</td>
-                <td className="px-4 py-2">{item.ticket_status || "Unclaimed"}</td>
+                <td className="px-4 py-2">
+                  {item.ticket_status || "Unclaimed"}
+                </td>
                 <td className="px-4 py-2">{item.support_person || "N/A"}</td>
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
-                  {new Date(item.raised_time).toLocaleString("en-IN", {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
+                  {new Date(item.raised_time)
+                    .toLocaleString("en-IN", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                    .replace(/\bam\b/g, "AM")
+                    .replace(/\bpm\b/g, "PM")}
                 </td>
                 <td className="px-4 py-2">
-                  <div>
+                  {item.approval_reqd && item.approver_id === loggedInEmpId ? (
                     <button
                       className="px-2 py-2 bg-gray-800 hover:bg-gray-950 text-white font-semibold rounded-md"
                       onClick={() => handleTakeActionClick(item)}
                     >
                       Take Action
                     </button>
-                  </div>
+                  ) : (
+                    "-"
+                  )}
                 </td>
               </tr>
             ))}

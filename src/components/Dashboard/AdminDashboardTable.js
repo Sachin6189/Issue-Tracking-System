@@ -28,7 +28,7 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
         console.log(res);
         const approvalData = res.data;
         // console.log(approvalData);
-        // Check if the approval_status is 'Approved'
+        // Check if the approval_status is 'Approved' or 'Rejected'
         if (
           approvalData.approval_status === "approve" ||
           approvalData.approval_status === "reject"
@@ -70,9 +70,6 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
       if (filteredStatus === "Pending") {
         setFilterData(pendingTickets);
       }
-      // setPendingTicketsCount(pendingTickets.length);
-      // setPendingTicketsCount(pendingTickets.length);
-      // setPendingTicketsCount(pendingTickets.length);
 
       if (filteredStatus === "Open") {
         setFilterData(
@@ -258,14 +255,17 @@ const AdminDashboardTable = ({ filteredStatus, loggedInUser }) => {
                 </td> */}
                 <td className="px-4 py-2">{item.contact}</td>
                 <td className="px-4 py-2">
-                  {new Date(item.raised_time).toLocaleString("en-IN", {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
+                  {new Date(item.raised_time)
+                    .toLocaleString("en-IN", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hourCycle: "h12",
+                    })
+                    .replace(/\bam\b/g, "AM")
+                    .replace(/\bpm\b/g, "PM")}
                 </td>
                 <td className="px-4 py-2">
                   {item.approval_reqd && item.approver_id === loggedInUserId ? (
